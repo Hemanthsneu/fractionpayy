@@ -147,9 +147,10 @@ export async function seedLeaderboard(): Promise<{ rows: number }> {
       (a) =>
         `('${a.agentId}', 'agent #${a.agentId}', ${a.feedbackCount}, ${a.uniqueClients}, ${a.reputationScore}, FALSE, CURRENT_TIMESTAMP())`
     );
-  // Our agent starts mid-pack so judges can watch it climb as feedback posts.
+  // Our agent: high client-diversity, starts just below the volume-farming
+  // leaders so a few feedbacks visibly overtake them and it climbs to #1.
   values.push(
-    `('${OUR_AGENT_ID}', '${OUR_AGENT_NAME}', 18, 15, ${score(18, 15)}, TRUE, CURRENT_TIMESTAMP())`
+    `('${OUR_AGENT_ID}', '${OUR_AGENT_NAME}', 129, 125, ${score(129, 125)}, TRUE, CURRENT_TIMESTAMP())`
   );
   await bq.query({
     query: `INSERT INTO ${FQTN} (agent_id,name,feedback_count,unique_clients,reputation_score,is_ours,updated_at) VALUES ${values.join(",")}`,

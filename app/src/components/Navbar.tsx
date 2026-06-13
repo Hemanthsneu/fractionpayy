@@ -14,6 +14,9 @@ export function Navbar() {
           </span>
         </Link>
         <div className="flex items-center gap-4 text-sm text-white/70">
+          <Link href="/dashboard" className="transition hover:text-white">
+            Dashboard
+          </Link>
           <Link href="/marketplace" className="transition hover:text-white">
             Invest
           </Link>
