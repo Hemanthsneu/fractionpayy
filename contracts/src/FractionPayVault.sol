@@ -58,7 +58,7 @@ contract FractionPayVault is ERC4626, Ownable, ReentrancyGuard {
 
     uint16 public feeBps = 50; // 0.50% — retained by the vault for LPs
     uint16 public constant MAX_FEE_BPS = 200;
-    uint256 public constant MAX_PRICE_AGE = 2 days;
+    uint256 public maxPriceAge = 7 days; // owner-tunable staleness window
 
     uint256 public totalFeesUsd; // lifetime protocol revenue (accounting)
     uint256 public totalYieldPreservedUsd; // lifetime annualized yield the agent preserved
@@ -66,6 +66,9 @@ contract FractionPayVault is ERC4626, Ownable, ReentrancyGuard {
     event RWARegistered(address indexed token, address feed, uint16 apyBps);
     event StableRegistered(address indexed token, address feed);
     event FeeBpsUpdated(uint16 feeBps);
+    event RWAActiveSet(address indexed token, bool active);
+    event StableActiveSet(address indexed token, bool active);
+    event MaxPriceAgeUpdated(uint256 maxPriceAge);
     event Settled(
         uint256 indexed id,
         address indexed payer,
@@ -118,12 +121,31 @@ contract FractionPayVault is ERC4626, Ownable, ReentrancyGuard {
         emit FeeBpsUpdated(newFeeBps);
     }
 
+    /// @notice Deactivate a token so a dead/stale feed can't be force-valued.
+    /// Removing it from NAV restores deposits/withdrawals (audit fix: feed-DoS).
+    function setRWAActive(address token, bool active) external onlyOwner {
+        rwaInfo[token].active = active;
+        emit RWAActiveSet(token, active);
+    }
+
+    function setStableActive(address token, bool active) external onlyOwner {
+        stableInfo[token].active = active;
+        emit StableActiveSet(token, active);
+    }
+
+    function setMaxPriceAge(uint256 age) external onlyOwner {
+        maxPriceAge = age;
+        emit MaxPriceAgeUpdated(age);
+    }
+
     // --- Oracle helpers -----------------------------------------------------
 
     function _price(AggregatorV3Interface feed) internal view returns (uint256) {
-        (, int256 answer,, uint256 updatedAt,) = feed.latestRoundData();
+        (uint80 roundId, int256 answer,, uint256 updatedAt, uint80 answeredInRound) =
+            feed.latestRoundData();
         if (answer <= 0) revert InvalidPrice(address(feed));
-        if (block.timestamp - updatedAt > MAX_PRICE_AGE) revert StalePrice(address(feed));
+        if (answeredInRound < roundId) revert StalePrice(address(feed)); // incomplete round
+        if (block.timestamp - updatedAt > maxPriceAge) revert StalePrice(address(feed));
         return uint256(answer); // 8-dec
     }
 
@@ -152,19 +174,34 @@ contract FractionPayVault is ERC4626, Ownable, ReentrancyGuard {
 
     // --- ERC-4626 NAV (USD-denominated, in USDC terms) ----------------------
 
+    /// @notice USD value of the vault's balance of a registered stable (external for try/catch).
+    function valueOfStableHeld(address t) public view returns (uint256) {
+        return stableUsdValue(t, IERC20(t).balanceOf(address(this)));
+    }
+
+    /// @notice USD value of the vault's balance of a registered RWA (external for try/catch).
+    function valueOfRWAHeld(address t) public view returns (uint256) {
+        return rwaUsdValue(t, IERC20(t).balanceOf(address(this)));
+    }
+
     /// @notice Total vault NAV = USDC + Σ(other stable · fx) + Σ(RWA · price).
+    /// @dev Each feed is isolated via try/catch: a single stale/invalid feed is
+    /// skipped (conservatively under-counted) instead of bricking deposits and
+    /// withdrawals for everyone. Owner can setXActive(false) to remove a dead feed.
     function totalAssets() public view override returns (uint256 nav) {
         for (uint256 i; i < stableList.length; ++i) {
             address t = stableList[i];
-            if (stableInfo[t].active) {
-                nav += stableUsdValue(t, IERC20(t).balanceOf(address(this)));
-            }
+            if (!stableInfo[t].active) continue;
+            try this.valueOfStableHeld(t) returns (uint256 v) {
+                nav += v;
+            } catch {}
         }
         for (uint256 i; i < rwaList.length; ++i) {
             address t = rwaList[i];
-            if (rwaInfo[t].active) {
-                nav += rwaUsdValue(t, IERC20(t).balanceOf(address(this)));
-            }
+            if (!rwaInfo[t].active) continue;
+            try this.valueOfRWAHeld(t) returns (uint256 v) {
+                nav += v;
+            } catch {}
         }
     }
 

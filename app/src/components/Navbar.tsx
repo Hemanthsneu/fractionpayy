@@ -14,6 +14,9 @@ export function Navbar() {
           </span>
         </Link>
         <div className="flex items-center gap-4 text-sm text-white/70">
+          <Link href="/property" className="transition hover:text-white">
+            Property
+          </Link>
           <Link href="/agents" className="transition hover:text-white">
             Agents
           </Link>

@@ -19,39 +19,50 @@ export interface Deployment {
   vault: Address;
   usdc: Address;
   eurc: Address;
+  /** Tokenized real-estate property with stablecoin dividends. */
+  property: Address;
   rwas: RwaInfo[];
 }
 
 export const deployments: Record<string, Deployment> = {
   arcTestnet: {
     chainId: 5042002,
-    vault: "0x81474BC97a075e47a718d901a11116C1e3CA4fA4",
-    usdc: "0xD85f3530aab65E0DB7EdE2e8d1E701dDbF049D20",
-    eurc: "0xD8194136c2139c2fCA137C4361F04a4B880905e9",
+    vault: "0xA7623b54108F29e99aCC492aD3B7f935379c4c25",
+    usdc: "0xea4b39ee4814A1952973FDA51BDdb96c8c3A6557",
+    eurc: "0x8351Cf27B35152119E585Cc21dBB1D3aA602ff47",
+    property: "0x4B6Fd6F27aDF844a563C5b046a9A44210Ce28c8C",
     rwas: [
       {
         symbol: "TBILL",
         name: "US T-Bill 3M",
-        token: "0xa8028dAE4D439c9324Dc28725D9063C2fBb74df4",
-        feed: "0xFA4679f91a4b27bEB348b2df97ED3F17A331bFB6",
+        token: "0x6F612bc5Eb27120E069321F3B97817C17ed3A104",
+        feed: "0xe3d7642aA1e8D8260D0CE6B030a07109Acd84E60",
         yieldBps: 450,
         emoji: "🏛️",
       },
       {
         symbol: "XAUM",
         name: "Tokenized Gold oz",
-        token: "0xf299113F88349db5959366e704C77ab263b1816D",
-        feed: "0x8cECAC513639df4c100eAF4B40C5e3d56F6a4dd5",
+        token: "0xC01c6e3Aa27C13BBCA25c7c7245cba31f890Bf11",
+        feed: "0xeCCCfBDcA982768418E86C304FEa1D67eA2e3F35",
         yieldBps: 0,
         emoji: "🥇",
       },
       {
         symbol: "MREIT",
         name: "Manhattan REIT Share",
-        token: "0x1b52d497908dfC908525f1027D306883DC3415c5",
-        feed: "0x7EbcBE526b06C589F3b6187c8881B0358E49F94c",
+        token: "0xc70d16f13140f36fCa9a7Fd071c4aEa75f134Cc8",
+        feed: "0x87D3A68264dF227b2407dB5F9828936D33a105Ad",
         yieldBps: 610,
         emoji: "🏙️",
+      },
+      {
+        symbol: "MNHTN",
+        name: "Manhattan Office Tower",
+        token: "0x4B6Fd6F27aDF844a563C5b046a9A44210Ce28c8C",
+        feed: "0xf09E391493642E9B0E9B6cA2899370af99620741",
+        yieldBps: 600,
+        emoji: "🏢",
       },
     ],
   },

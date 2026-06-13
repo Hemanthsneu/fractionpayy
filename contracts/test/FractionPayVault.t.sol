@@ -171,10 +171,39 @@ contract FractionPayVaultTest is Test {
         vault.registerRWA(address(gold), address(goldFeed), 0);
     }
 
-    function test_feeBpsBounds() public {
+    // --- Audit fix: a stale/invalid feed must NOT brick the vault ------------
+
+    function test_staleFeedDoesNotBrickVault() public {
+        // EURC feed goes stale (no refresh for > maxPriceAge).
+        vm.warp(block.timestamp + 8 days);
+        // totalAssets must NOT revert; it just skips the stale EURC reserve.
+        uint256 nav = vault.totalAssets();
+        assertGt(nav, 0);
+        // LP can still withdraw available USDC; deposits still work.
+        vm.startPrank(lp);
+        uint256 maxW = vault.maxWithdraw(lp);
+        assertGt(maxW, 0);
+        vault.withdraw(maxW, lp, lp);
+        vm.stopPrank();
+    }
+
+    function test_zeroPriceFeedDoesNotBrickVault() public {
+        eurcFeed.setAnswer(0); // malicious/incident: feed reports 0
+        uint256 nav = vault.totalAssets(); // skips EURC, does not revert
+        assertGt(nav, 0);
+    }
+
+    function test_ownerCanDeactivateDeadFeed() public {
+        vm.warp(block.timestamp + 8 days);
+        uint256 navWithStale = vault.totalAssets(); // EURC skipped
+        vault.setStableActive(address(eurc), false); // remove dead feed
+        assertEq(vault.totalAssets(), navWithStale); // unchanged; cleanly excluded
+    }
+
+    function test_feeTooHighReverts() public {
         vm.expectRevert(FractionPayVault.FeeTooHigh.selector);
         vault.setFeeBps(201);
-        vault.setFeeBps(100); // 1% ok
+        vault.setFeeBps(100);
         assertEq(vault.feeBps(), 100);
     }
 }

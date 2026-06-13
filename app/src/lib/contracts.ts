@@ -14,6 +14,24 @@ export const vaultAbi = parseAbi([
   "event Settled(uint256 indexed id, address indexed payer, address indexed merchant, address rwaToken, uint256 rwaAmount, address payToken, uint256 payOut, uint256 usdValue, uint256 feeUsd, uint256 yieldPreservedPerYearUsd)",
 ]);
 
+/** PropertyToken — tokenized real estate with stablecoin dividends. */
+export const propertyTokenAbi = parseAbi([
+  "function propertyAddress() view returns (string)",
+  "function valuationUsd() view returns (uint256)",
+  "function annualYieldBps() view returns (uint16)",
+  "function totalSupply() view returns (uint256)",
+  "function balanceOf(address) view returns (uint256)",
+  "function totalDividendsDistributed() view returns (uint256)",
+  "function distributionCount() view returns (uint32)",
+  "function lastDistributionAt() view returns (uint64)",
+  "function withdrawableDividendOf(address account) view returns (uint256)",
+  "function distributeDividends(uint256 amount)",
+  "function claimDividend() returns (uint256 amount)",
+  "function issueShares(address investor, uint256 shares)",
+  "event DividendsDistributed(uint256 indexed round, uint256 amount, uint256 perShareMagnified)",
+  "event DividendClaimed(address indexed holder, uint256 amount)",
+]);
+
 export const erc20Abi = parseAbi([
   "function balanceOf(address) view returns (uint256)",
   "function decimals() view returns (uint8)",

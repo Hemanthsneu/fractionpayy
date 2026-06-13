@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { getPortfolio } from "@/lib/portfolio";
+import { getVaultStats } from "@/lib/vault";
 import { demoWallets } from "@/lib/deployments";
 import { demoMerchants } from "@/lib/merchants";
 
 export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
-  const positions = await getPortfolio(demoWallets.buyer);
+  const [positions, vault] = await Promise.all([
+    getPortfolio(demoWallets.buyer),
+    getVaultStats().catch(() => null),
+  ]);
   const total = positions.reduce((s, p) => s + p.valueUsd, 0);
 
   return (
@@ -47,6 +51,25 @@ export default async function Dashboard() {
         ))}
       </section>
 
+      {vault && (
+        <section className="mt-10 rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-400/5 to-cyan-400/5 p-5 backdrop-blur">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-emerald-300/80">
+              Liquidity vault (Arc)
+            </h2>
+            <Link href="/property" className="text-xs text-cyan-300 hover:underline">
+              View tokenized property →
+            </Link>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <VaultStat label="TVL (NAV)" value={`$${vault.tvlUsd.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} />
+            <VaultStat label="LP share price" value={`$${vault.pricePerShare.toFixed(4)}`} sub={`${vault.lpYieldPct >= 0 ? "+" : ""}${vault.lpYieldPct.toFixed(2)}% since inception`} />
+            <VaultStat label="Protocol fees earned" value={`$${vault.totalFeesUsd.toFixed(2)}`} sub={`${(vault.feeBps / 100).toFixed(2)}% per payment → LPs`} />
+            <VaultStat label="Yield preserved" value={`$${vault.totalYieldPreservedUsd.toFixed(2)}/yr`} sub="by the optimizer agent" />
+          </div>
+        </section>
+      )}
+
       <section className="mt-12">
         <h2 className="text-lg font-semibold text-white/80">Demo merchants — tap a card</h2>
         <p className="mt-1 text-sm text-white/40">
@@ -66,6 +89,16 @@ export default async function Dashboard() {
           ))}
         </div>
       </section>
+    </div>
+  );
+}
+
+function VaultStat({ label, value, sub }: { label: string; value: string; sub?: string }) {
+  return (
+    <div className="rounded-xl bg-white/5 p-3">
+      <p className="text-xs text-white/50">{label}</p>
+      <p className="mt-1 text-lg font-bold">{value}</p>
+      {sub && <p className="text-[11px] text-white/40">{sub}</p>}
     </div>
   );
 }

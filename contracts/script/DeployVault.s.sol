@@ -7,6 +7,7 @@ import {MockStable} from "../src/MockStable.sol";
 import {MockRWA} from "../src/MockRWA.sol";
 import {YieldAggregator} from "../src/YieldAggregator.sol";
 import {MockAggregator} from "../src/MockAggregator.sol";
+import {PropertyToken} from "../src/PropertyToken.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /// Deploys the FractionPay v2 vault stack to Arc:
@@ -53,6 +54,17 @@ contract DeployVault is Script {
         gold.mint(BUYER, 12.5e18);
         reit.mint(BUYER, 2400e18);
 
+        // --- Tokenized property (full RWA lifecycle: issue -> dividends -> spend) ---
+        PropertyToken prop = new PropertyToken(
+            "Manhattan Office Tower", "MNHTN", IERC20(address(usdc)), "350 5th Ave, New York, NY", 10_000_000e6, 600
+        );
+        YieldAggregator propFeed = new YieldAggregator(1000_00000000, 0, "MNHTN/USD"); // flat $1,000/share
+        vault.registerRWA(address(prop), address(propFeed), 600); // spendable; 6% yield (preserve it)
+        prop.issueShares(BUYER, 100e18); // primary distribution: $100k of the tower to the investor
+        // Seed issuer USDC to run a demo quarterly dividend distribution from the app.
+        usdc.mint(msg.sender, 100_000e6);
+        usdc.approve(address(prop), type(uint256).max);
+
         vm.stopBroadcast();
 
         console.log("=== FractionPay v2 (vault) ===");
@@ -64,5 +76,6 @@ contract DeployVault is Script {
         console.log("XAUM:        ", address(gold), " feed:", address(goldFeed));
         console.log("MREIT:       ", address(reit), " feed:", address(reitFeed));
         console.log("EURC feed:   ", address(eurcFeed));
+        console.log("PROPERTY(MNHTN):", address(prop), " feed:", address(propFeed));
     }
 }
