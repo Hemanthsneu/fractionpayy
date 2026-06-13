@@ -64,7 +64,8 @@ export const deployments: Record<string, Deployment> = {
 
 /** Demo wallets (testnet burners — public addresses only). */
 export const demoWallets = {
-  buyer: "0x45763cE2De66E3261278228aA998AAC917FA14E1" as Address,
+  // Demo buyer = the presenter's MetaMask (holds the tokenized RWA portfolio on Arc).
+  buyer: "0xce22e02b82a20bE9c59dc11161778469B2Bf7C26" as Address,
   coffeeshop: "0x24f098DD3a7260DCcfdD9D74714289B9131DD745" as Address,
   supplier: "0xfb98F38B40751422356f5eEa6bBB663831fd5E04" as Address,
   agent: "0x69C4b79F998e92267f116f12A3D9764ac77b8F30" as Address,
