@@ -2,21 +2,14 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { parseUnits, createPublicClient, http, type Address } from "viem";
 import { useDynamicContext, useOpenFundingOptions } from "@dynamic-labs/sdk-react-core";
-import { isEthereumWallet } from "@dynamic-labs/ethereum";
 import { Loader2, Bot, CheckCircle2, Receipt, ArrowRight, Zap, Wallet } from "lucide-react";
-import { arcTestnet } from "@/lib/chains";
 import { deployments, demoWallets } from "@/lib/deployments";
-import { fractionPayAbi, erc20Abi } from "@/lib/contracts";
 import type { Merchant } from "@/lib/merchants";
 import type { LiquidationPlan, Position } from "@/lib/optimizer";
 import { WorldVerify } from "./WorldGate";
 
 type Step = "amount" | "hiring" | "plan" | "paying" | "done";
-
-// Dedicated Arc read client for tx receipts (independent of wallet/wagmi).
-const arcPublic = createPublicClient({ chain: arcTestnet, transport: http() });
 
 interface HireResult {
   agent: string;
@@ -29,7 +22,6 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
   const { primaryWallet } = useDynamicContext();
   const { openFundingOptions } = useOpenFundingOptions();
   const isConnected = !!primaryWallet;
-  const address = primaryWallet?.address as Address | undefined;
 
   const [step, setStep] = useState<Step>("amount");
   const [amount, setAmount] = useState("6.00");
@@ -40,13 +32,14 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
   const [error, setError] = useState<string>("");
 
   const dep = deployments.arcTestnet;
-  const buyer = (address ?? demoWallets.buyer) as Address;
 
   async function hireAgent() {
     setError("");
     setStep("hiring");
     try {
-      const pf = await fetch(`/api/portfolio?address=${buyer}`).then((r) => r.json());
+      // Portfolio is the funded demo wallet — independent of which wallet the
+      // visitor connects (so funds always load, on any device).
+      const pf = await fetch(`/api/portfolio?address=${demoWallets.buyer}`).then((r) => r.json());
       const positions: Position[] = pf.positions;
       const res = await fetch("/api/hire", {
         method: "POST",
@@ -69,45 +62,25 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
   }
 
   async function confirmPayment() {
-    if (!hire || !primaryWallet || !isEthereumWallet(primaryWallet)) return;
+    if (!hire) return;
     setError("");
     setStep("paying");
     try {
-      // Move the connected wallet to Arc, then send via Dynamic's viem client.
-      try {
-        await primaryWallet.switchNetwork(arcTestnet.id);
-      } catch {
-        /* user may already be on Arc, or wallet auto-switches on tx */
-      }
-      const walletClient = await primaryWallet.getWalletClient(String(arcTestnet.id));
-      if (!walletClient?.account) throw new Error("wallet client unavailable");
-      const account = walletClient.account;
-
-      const rwa = dep.rwas.find((r) => r.symbol === hire.plan.symbol);
-      if (!rwa) throw new Error(`unknown RWA ${hire.plan.symbol}`);
-
-      const sellWei = parseUnits(hire.plan.sellAmount.toFixed(18), 18);
-      const minOut = parseUnits((Number(amount) * 0.98).toFixed(6), 6); // 2% guard
-
-      const approveTx = await walletClient.writeContract({
-        chain: arcTestnet,
-        account,
-        address: rwa.token,
-        abi: erc20Abi,
-        functionName: "approve",
-        args: [dep.fractionPay, sellWei],
+      // FractionPay settles on Arc server-side (works on any device — no chain
+      // switch / no RWA needed in the visitor's wallet).
+      const res = await fetch("/api/settle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          symbol: hire.plan.symbol,
+          sellAmount: hire.plan.sellAmount,
+          merchant: merchant.address,
+          amountUsd: Number(amount),
+        }),
       });
-      await arcPublic.waitForTransactionReceipt({ hash: approveTx });
-
-      const tx = await walletClient.writeContract({
-        chain: arcTestnet,
-        account,
-        address: dep.fractionPay,
-        abi: fractionPayAbi,
-        functionName: "payWithRWA",
-        args: [merchant.address, rwa.token, sellWei, minOut],
-      });
-      await arcPublic.waitForTransactionReceipt({ hash: tx });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error ?? "settlement failed");
+      const tx = data.settlementTx as string;
       setPayTx(tx);
       setStep("done");
       // Show that cross-chain settlement to other chains is available via LI.FI.
@@ -234,11 +207,15 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
             )}
             <button
               onClick={confirmPayment}
-              disabled={!isConnected}
-              className="mt-5 w-full rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 py-3 font-semibold text-black transition hover:opacity-90 disabled:opacity-40"
+              className="mt-5 w-full rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 py-3 font-semibold text-black transition hover:opacity-90"
             >
-              {isConnected ? `Pay ${merchant.displayName} $${amount}` : "Connect wallet to pay"}
+              Pay {merchant.displayName} ${amount}
             </button>
+            {!isConnected && (
+              <p className="mt-2 text-center text-[11px] text-white/40">
+                {"Tip: connect a wallet + verify World ID above to show those steps — payment settles either way."}
+              </p>
+            )}
             {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
           </motion.div>
         )}
