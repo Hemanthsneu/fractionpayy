@@ -1,0 +1,355 @@
+{
+  "generatedAt": "2026-06-12T22:23:22.792Z",
+  "agents": [
+    {
+      "agentId": "22721",
+      "feedbackCount": 129,
+      "uniqueClients": 127,
+      "lastFeedback": "2026-02-01T10:24:23.000Z",
+      "reputationScore": 1270
+    },
+    {
+      "agentId": "6888",
+      "feedbackCount": 148,
+      "uniqueClients": 120,
+      "lastFeedback": "2026-05-03T06:19:47.000Z",
+      "reputationScore": 1200
+    },
+    {
+      "agentId": "14645",
+      "feedbackCount": 106,
+      "uniqueClients": 100,
+      "lastFeedback": "2026-03-06T22:36:47.000Z",
+      "reputationScore": 1000
+    },
+    {
+      "agentId": "10307",
+      "feedbackCount": 51,
+      "uniqueClients": 44,
+      "lastFeedback": "2026-05-30T22:13:59.000Z",
+      "reputationScore": 440
+    },
+    {
+      "agentId": "9382",
+      "feedbackCount": 47,
+      "uniqueClients": 42,
+      "lastFeedback": "2026-04-05T05:43:47.000Z",
+      "reputationScore": 420
+    },
+    {
+      "agentId": "22771",
+      "feedbackCount": 49,
+      "uniqueClients": 35,
+      "lastFeedback": "2026-05-07T01:35:23.000Z",
+      "reputationScore": 350
+    },
+    {
+      "agentId": "25255",
+      "feedbackCount": 23,
+      "uniqueClients": 22,
+      "lastFeedback": "2026-04-11T13:30:23.000Z",
+      "reputationScore": 220
+    },
+    {
+      "agentId": "13445",
+      "feedbackCount": 83,
+      "uniqueClients": 19,
+      "lastFeedback": "2026-03-25T17:28:23.000Z",
+      "reputationScore": 190
+    },
+    {
+      "agentId": "9380",
+      "feedbackCount": 29,
+      "uniqueClients": 17,
+      "lastFeedback": "2026-04-05T05:43:59.000Z",
+      "reputationScore": 170
+    },
+    {
+      "agentId": "12267",
+      "feedbackCount": 22,
+      "uniqueClients": 17,
+      "lastFeedback": "2026-05-03T06:21:47.000Z",
+      "reputationScore": 170
+    },
+    {
+      "agentId": "12288",
+      "feedbackCount": 21,
+      "uniqueClients": 16,
+      "lastFeedback": "2026-04-07T17:05:23.000Z",
+      "reputationScore": 160
+    },
+    {
+      "agentId": "22690",
+      "feedbackCount": 25,
+      "uniqueClients": 14,
+      "lastFeedback": "2026-04-11T13:30:47.000Z",
+      "reputationScore": 140
+    },
+    {
+      "agentId": "22688",
+      "feedbackCount": 18,
+      "uniqueClients": 14,
+      "lastFeedback": "2026-04-13T12:56:11.000Z",
+      "reputationScore": 140
+    },
+    {
+      "agentId": "22602",
+      "feedbackCount": 21,
+      "uniqueClients": 13,
+      "lastFeedback": "2026-02-19T09:31:47.000Z",
+      "reputationScore": 130
+    },
+    {
+      "agentId": "9750",
+      "feedbackCount": 10,
+      "uniqueClients": 10,
+      "lastFeedback": "2026-04-11T13:30:59.000Z",
+      "reputationScore": 100
+    },
+    {
+      "agentId": "20014",
+      "feedbackCount": 23,
+      "uniqueClients": 8,
+      "lastFeedback": "2026-04-09T13:34:11.000Z",
+      "reputationScore": 80
+    },
+    {
+      "agentId": "12518",
+      "feedbackCount": 17,
+      "uniqueClients": 8,
+      "lastFeedback": "2026-04-09T13:34:23.000Z",
+      "reputationScore": 80
+    },
+    {
+      "agentId": "22669",
+      "feedbackCount": 16,
+      "uniqueClients": 8,
+      "lastFeedback": "2026-04-07T17:08:23.000Z",
+      "reputationScore": 80
+    },
+    {
+      "agentId": "6817",
+      "feedbackCount": 12,
+      "uniqueClients": 8,
+      "lastFeedback": "2026-04-09T13:34:47.000Z",
+      "reputationScore": 80
+    },
+    {
+      "agentId": "12276",
+      "feedbackCount": 12,
+      "uniqueClients": 8,
+      "lastFeedback": "2026-04-14T14:18:23.000Z",
+      "reputationScore": 80
+    },
+    {
+      "agentId": "19837",
+      "feedbackCount": 11,
+      "uniqueClients": 8,
+      "lastFeedback": "2026-04-14T14:18:35.000Z",
+      "reputationScore": 80
+    },
+    {
+      "agentId": "13716",
+      "feedbackCount": 9,
+      "uniqueClients": 8,
+      "lastFeedback": "2026-04-13T12:55:59.000Z",
+      "reputationScore": 80
+    },
+    {
+      "agentId": "9765",
+      "feedbackCount": 9,
+      "uniqueClients": 8,
+      "lastFeedback": "2026-01-29T21:06:47.000Z",
+      "reputationScore": 80
+    },
+    {
+      "agentId": "13683",
+      "feedbackCount": 8,
+      "uniqueClients": 8,
+      "lastFeedback": "2026-02-25T16:38:59.000Z",
+      "reputationScore": 80
+    },
+    {
+      "agentId": "13026",
+      "feedbackCount": 11,
+      "uniqueClients": 7,
+      "lastFeedback": "2026-04-21T20:17:35.000Z",
+      "reputationScore": 70
+    },
+    {
+      "agentId": "6940",
+      "feedbackCount": 10,
+      "uniqueClients": 7,
+      "lastFeedback": "2026-04-13T12:56:23.000Z",
+      "reputationScore": 70
+    },
+    {
+      "agentId": "31875",
+      "feedbackCount": 8,
+      "uniqueClients": 7,
+      "lastFeedback": "2026-05-14T20:13:59.000Z",
+      "reputationScore": 70
+    },
+    {
+      "agentId": "14400",
+      "feedbackCount": 7,
+      "uniqueClients": 7,
+      "lastFeedback": "2026-04-14T14:17:35.000Z",
+      "reputationScore": 70
+    },
+    {
+      "agentId": "34135",
+      "feedbackCount": 8,
+      "uniqueClients": 6,
+      "lastFeedback": "2026-06-11T09:07:11.000Z",
+      "reputationScore": 60
+    },
+    {
+      "agentId": "13446",
+      "feedbackCount": 7,
+      "uniqueClients": 6,
+      "lastFeedback": "2026-04-06T21:36:23.000Z",
+      "reputationScore": 60
+    },
+    {
+      "agentId": "15681",
+      "feedbackCount": 6,
+      "uniqueClients": 6,
+      "lastFeedback": "2026-04-21T02:27:59.000Z",
+      "reputationScore": 60
+    },
+    {
+      "agentId": "6996",
+      "feedbackCount": 15,
+      "uniqueClients": 5,
+      "lastFeedback": "2026-04-21T02:27:35.000Z",
+      "reputationScore": 50
+    },
+    {
+      "agentId": "10311",
+      "feedbackCount": 7,
+      "uniqueClients": 5,
+      "lastFeedback": "2026-02-20T08:52:11.000Z",
+      "reputationScore": 50
+    },
+    {
+      "agentId": "13640",
+      "feedbackCount": 6,
+      "uniqueClients": 5,
+      "lastFeedback": "2026-02-19T10:16:59.000Z",
+      "reputationScore": 50
+    },
+    {
+      "agentId": "10303",
+      "feedbackCount": 6,
+      "uniqueClients": 5,
+      "lastFeedback": "2026-04-21T02:28:35.000Z",
+      "reputationScore": 50
+    },
+    {
+      "agentId": "20019",
+      "feedbackCount": 7,
+      "uniqueClients": 4,
+      "lastFeedback": "2026-05-09T16:14:35.000Z",
+      "reputationScore": 40
+    },
+    {
+      "agentId": "22987",
+      "feedbackCount": 6,
+      "uniqueClients": 4,
+      "lastFeedback": "2026-04-23T20:17:47.000Z",
+      "reputationScore": 40
+    },
+    {
+      "agentId": "22693",
+      "feedbackCount": 6,
+      "uniqueClients": 4,
+      "lastFeedback": "2026-05-01T08:18:11.000Z",
+      "reputationScore": 40
+    },
+    {
+      "agentId": "19889",
+      "feedbackCount": 6,
+      "uniqueClients": 4,
+      "lastFeedback": "2026-04-23T20:17:59.000Z",
+      "reputationScore": 40
+    },
+    {
+      "agentId": "22673",
+      "feedbackCount": 6,
+      "uniqueClients": 3,
+      "lastFeedback": "2026-05-03T20:53:23.000Z",
+      "reputationScore": 30
+    },
+    {
+      "agentId": "23000",
+      "feedbackCount": 6,
+      "uniqueClients": 3,
+      "lastFeedback": "2026-05-13T10:13:59.000Z",
+      "reputationScore": 30
+    },
+    {
+      "agentId": "20018",
+      "feedbackCount": 6,
+      "uniqueClients": 3,
+      "lastFeedback": "2026-04-30T14:17:59.000Z",
+      "reputationScore": 30
+    },
+    {
+      "agentId": "13427",
+      "feedbackCount": 6,
+      "uniqueClients": 3,
+      "lastFeedback": "2026-04-26T14:17:59.000Z",
+      "reputationScore": 30
+    },
+    {
+      "agentId": "13025",
+      "feedbackCount": 6,
+      "uniqueClients": 3,
+      "lastFeedback": "2026-04-24T20:17:35.000Z",
+      "reputationScore": 30
+    },
+    {
+      "agentId": "22601",
+      "feedbackCount": 6,
+      "uniqueClients": 3,
+      "lastFeedback": "2026-04-30T14:17:47.000Z",
+      "reputationScore": 30
+    },
+    {
+      "agentId": "22995",
+      "feedbackCount": 6,
+      "uniqueClients": 3,
+      "lastFeedback": "2026-05-03T20:53:47.000Z",
+      "reputationScore": 30
+    },
+    {
+      "agentId": "22999",
+      "feedbackCount": 6,
+      "uniqueClients": 3,
+      "lastFeedback": "2026-05-12T10:14:23.000Z",
+      "reputationScore": 30
+    },
+    {
+      "agentId": "22687",
+      "feedbackCount": 6,
+      "uniqueClients": 3,
+      "lastFeedback": "2026-05-11T16:14:59.000Z",
+      "reputationScore": 30
+    },
+    {
+      "agentId": "29058",
+      "feedbackCount": 9,
+      "uniqueClients": 2,
+      "lastFeedback": "2026-04-18T08:19:47.000Z",
+      "reputationScore": 20
+    },
+    {
+      "agentId": "1",
+      "feedbackCount": 6,
+      "uniqueClients": 2,
+      "lastFeedback": "2026-03-31T00:44:35.000Z",
+      "reputationScore": 20
+    }
+  ]
+}
