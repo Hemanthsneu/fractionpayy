@@ -1,9 +1,8 @@
 import { Bot, Zap, ShieldCheck } from "lucide-react";
-import leaderboard from "@/data/leaderboard.json";
 import { AgentsLive } from "@/components/AgentsLive";
+import { LiveLeaderboard } from "@/components/LiveLeaderboard";
 
 export default function AgentsPage() {
-  const { generatedAt, agents } = leaderboard;
 
   return (
     <div>
@@ -48,50 +47,7 @@ export default function AgentsPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-white/10">
-        <table className="w-full text-sm">
-          <thead className="bg-white/5 text-left text-xs uppercase tracking-wide text-white/40">
-            <tr>
-              <th className="px-4 py-3">#</th>
-              <th className="px-4 py-3">Agent</th>
-              <th className="px-4 py-3 text-right">Feedback</th>
-              <th className="px-4 py-3 text-right">Unique clients</th>
-              <th className="px-4 py-3 text-right">Reputation</th>
-            </tr>
-          </thead>
-          <tbody>
-            {agents.slice(0, 20).map((a, i) => {
-              const suspicious = a.uniqueClients / a.feedbackCount < 0.4;
-              return (
-                <tr key={a.agentId} className="border-t border-white/5 hover:bg-white/5">
-                  <td className="px-4 py-3 text-white/40">{i + 1}</td>
-                  <td className="px-4 py-3 font-mono">agent #{a.agentId}</td>
-                  <td className="px-4 py-3 text-right">{a.feedbackCount}</td>
-                  <td className="px-4 py-3 text-right">
-                    {a.uniqueClients}
-                    {suspicious && (
-                      <span
-                        className="ml-2 rounded bg-amber-400/10 px-1.5 py-0.5 text-[10px] text-amber-300"
-                        title="Low client diversity — possible reputation inflation. Our diversity-weighted score penalizes this."
-                      >
-                        low diversity
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-right font-semibold text-emerald-300">
-                    {a.reputationScore.toLocaleString()}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      <p className="mt-3 text-xs text-white/30">
-        Source: bigquery-public-data.crypto_ethereum · Reputation Registry 0x8004BAa1…9b63 ·
-        snapshot {new Date(generatedAt).toLocaleString()} · score = feedback × client-diversity
-        (penalizes self-dealing)
-      </p>
+      <LiveLeaderboard />
     </div>
   );
 }

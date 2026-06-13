@@ -72,14 +72,16 @@ export const erc8004ReputationAbi = parseAbi([
   "function giveFeedback(uint256 agentId, int128 value, uint8 valueDecimals, string tag1, string tag2, string endpoint, string feedbackURI, bytes32 feedbackHash)",
 ]);
 
-/** ERC-8004 registries (verified on-chain 2026-06-12). */
+/** ERC-8004 registries (verified on-chain 2026-06-12). Same addresses on both Sepolias. */
 export const ERC8004 = {
   identity: {
     mainnet: "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432",
     baseSepolia: "0x8004A818BFB912233c491871b3d84c89A494BD9e",
+    ethereumSepolia: "0x8004A818BFB912233c491871b3d84c89A494BD9e",
   },
   reputation: {
     mainnet: "0x8004BAa17C55a88189AE136b182e5fdA19dE9b63",
     baseSepolia: "0x8004B663056A597Dffe9eCcC1965A193B7388713",
+    ethereumSepolia: "0x8004B663056A597Dffe9eCcC1965A193B7388713",
   },
 } as const;

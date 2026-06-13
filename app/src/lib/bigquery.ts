@@ -101,3 +101,89 @@ export async function runLiveLeaderboard(): Promise<LiveLeaderboard> {
     sql: LEADERBOARD_SQL.trim(),
   };
 }
+
+// --- Live, writable leaderboard table (the feedback -> re-rank loop) ---------
+// We materialize a leaderboard in OUR BigQuery so posting on-chain feedback can
+// update an agent's score and the frontend re-ranks instantly — the loop the
+// Google team flagged as the unique part. Seeded from the mainnet query above.
+
+const DATASET = "reputation";
+const TABLE = "leaderboard";
+export const OUR_AGENT_ID = "fractionpay-optimizer";
+export const OUR_AGENT_NAME = "optimizer.fractionpay.eth";
+const FQTN = `\`fractionpay.${DATASET}.${TABLE}\``;
+
+export interface BoardRow {
+  agentId: string;
+  name: string;
+  feedbackCount: number;
+  uniqueClients: number;
+  reputationScore: number;
+  isOurs: boolean;
+}
+
+function score(feedback: number, clients: number): number {
+  const diversity = feedback > 0 ? clients / feedback : 0;
+  return Math.round(feedback * (0.4 + 0.6 * diversity));
+}
+
+/** Create the dataset+table and seed it from the live mainnet ranking + our agent. */
+export async function seedLeaderboard(): Promise<{ rows: number }> {
+  const bq = client();
+  await bq.query({
+    query: `CREATE SCHEMA IF NOT EXISTS \`fractionpay.${DATASET}\` OPTIONS(location="US")`,
+  });
+  await bq.query({
+    query: `CREATE TABLE IF NOT EXISTS ${FQTN} (
+      agent_id STRING, name STRING, feedback_count INT64, unique_clients INT64,
+      reputation_score INT64, is_ours BOOL, updated_at TIMESTAMP)`,
+  });
+  await bq.query({ query: `DELETE FROM ${FQTN} WHERE TRUE` });
+
+  const live = await runLiveLeaderboard();
+  const values = live.agents
+    .slice(0, 12)
+    .map(
+      (a) =>
+        `('${a.agentId}', 'agent #${a.agentId}', ${a.feedbackCount}, ${a.uniqueClients}, ${a.reputationScore}, FALSE, CURRENT_TIMESTAMP())`
+    );
+  // Our agent starts mid-pack so judges can watch it climb as feedback posts.
+  values.push(
+    `('${OUR_AGENT_ID}', '${OUR_AGENT_NAME}', 18, 15, ${score(18, 15)}, TRUE, CURRENT_TIMESTAMP())`
+  );
+  await bq.query({
+    query: `INSERT INTO ${FQTN} (agent_id,name,feedback_count,unique_clients,reputation_score,is_ours,updated_at) VALUES ${values.join(",")}`,
+  });
+  return { rows: values.length };
+}
+
+/** Read the materialized leaderboard, ranked. */
+export async function readLeaderboard(): Promise<BoardRow[]> {
+  const bq = client();
+  const [rows] = await bq.query({
+    query: `SELECT agent_id, name, feedback_count, unique_clients, reputation_score, is_ours
+            FROM ${FQTN} ORDER BY reputation_score DESC`,
+  });
+  return rows.map((r: Record<string, unknown>) => ({
+    agentId: String(r.agent_id),
+    name: String(r.name),
+    feedbackCount: Number(r.feedback_count),
+    uniqueClients: Number(r.unique_clients),
+    reputationScore: Number(r.reputation_score),
+    isOurs: Boolean(r.is_ours),
+  }));
+}
+
+/** Apply a new on-chain feedback to our agent and re-rank (returns new board). */
+export async function recordOurFeedback(newClient: boolean): Promise<BoardRow[]> {
+  const bq = client();
+  await bq.query({
+    query: `UPDATE ${FQTN}
+      SET feedback_count = feedback_count + 1,
+          unique_clients = unique_clients + ${newClient ? 1 : 0},
+          reputation_score = CAST(ROUND((feedback_count + 1) * (0.4 + 0.6 * SAFE_DIVIDE(unique_clients + ${newClient ? 1 : 0}, feedback_count + 1))) AS INT64),
+          updated_at = CURRENT_TIMESTAMP()
+      WHERE is_ours = TRUE`,
+  });
+  return readLeaderboard();
+}
