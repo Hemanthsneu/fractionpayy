@@ -47,7 +47,7 @@ const FALLBACK: Record<string, Omit<Merchant, "source">> = {
 
 const ensClient = createPublicClient({
   chain: mainnet,
-  transport: http(process.env.ETH_MAINNET_RPC_URL || "https://eth.llamarpc.com"),
+  transport: http(process.env.ETH_MAINNET_RPC_URL || "https://ethereum-rpc.publicnode.com"),
 });
 
 /**
