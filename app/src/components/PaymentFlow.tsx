@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { parseUnits, formatUnits, type Address } from "viem";
-import { useAccount, useSwitchChain, useWriteContract, usePublicClient } from "wagmi";
-import { useOpenFundingOptions } from "@dynamic-labs/sdk-react-core";
+import { parseUnits, createPublicClient, http, type Address } from "viem";
+import { useDynamicContext, useOpenFundingOptions } from "@dynamic-labs/sdk-react-core";
+import { isEthereumWallet } from "@dynamic-labs/ethereum";
 import { Loader2, Bot, CheckCircle2, Receipt, ArrowRight, Zap, Wallet } from "lucide-react";
 import { arcTestnet } from "@/lib/chains";
 import { deployments, demoWallets } from "@/lib/deployments";
@@ -15,6 +15,9 @@ import { WorldVerify } from "./WorldGate";
 
 type Step = "amount" | "hiring" | "plan" | "paying" | "done";
 
+// Dedicated Arc read client for tx receipts (independent of wallet/wagmi).
+const arcPublic = createPublicClient({ chain: arcTestnet, transport: http() });
+
 interface HireResult {
   agent: string;
   erc8004AgentId: string | null;
@@ -23,11 +26,10 @@ interface HireResult {
 }
 
 export function PaymentFlow({ merchant }: { merchant: Merchant }) {
-  const { address, isConnected } = useAccount();
-  const { switchChainAsync } = useSwitchChain();
-  const { writeContractAsync } = useWriteContract();
-  const publicClient = usePublicClient({ chainId: arcTestnet.id });
+  const { primaryWallet } = useDynamicContext();
   const { openFundingOptions } = useOpenFundingOptions();
+  const isConnected = !!primaryWallet;
+  const address = primaryWallet?.address as Address | undefined;
 
   const [step, setStep] = useState<Step>("amount");
   const [amount, setAmount] = useState("6.00");
@@ -67,11 +69,19 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
   }
 
   async function confirmPayment() {
-    if (!hire) return;
+    if (!hire || !primaryWallet || !isEthereumWallet(primaryWallet)) return;
     setError("");
     setStep("paying");
     try {
-      await switchChainAsync({ chainId: arcTestnet.id }).catch(() => {});
+      // Move the connected wallet to Arc, then send via Dynamic's viem client.
+      try {
+        await primaryWallet.switchNetwork(arcTestnet.id);
+      } catch {
+        /* user may already be on Arc, or wallet auto-switches on tx */
+      }
+      const walletClient = await primaryWallet.getWalletClient(String(arcTestnet.id));
+      if (!walletClient?.account) throw new Error("wallet client unavailable");
+      const account = walletClient.account;
 
       const rwa = dep.rwas.find((r) => r.symbol === hire.plan.symbol);
       if (!rwa) throw new Error(`unknown RWA ${hire.plan.symbol}`);
@@ -79,23 +89,25 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
       const sellWei = parseUnits(hire.plan.sellAmount.toFixed(18), 18);
       const minOut = parseUnits((Number(amount) * 0.98).toFixed(6), 6); // 2% guard
 
-      const approveTx = await writeContractAsync({
-        chainId: arcTestnet.id,
+      const approveTx = await walletClient.writeContract({
+        chain: arcTestnet,
+        account,
         address: rwa.token,
         abi: erc20Abi,
         functionName: "approve",
         args: [dep.fractionPay, sellWei],
       });
-      await publicClient?.waitForTransactionReceipt({ hash: approveTx });
+      await arcPublic.waitForTransactionReceipt({ hash: approveTx });
 
-      const tx = await writeContractAsync({
-        chainId: arcTestnet.id,
+      const tx = await walletClient.writeContract({
+        chain: arcTestnet,
+        account,
         address: dep.fractionPay,
         abi: fractionPayAbi,
         functionName: "payWithRWA",
         args: [merchant.address, rwa.token, sellWei, minOut],
       });
-      await publicClient?.waitForTransactionReceipt({ hash: tx });
+      await arcPublic.waitForTransactionReceipt({ hash: tx });
       setPayTx(tx);
       setStep("done");
       // Show that cross-chain settlement to other chains is available via LI.FI.

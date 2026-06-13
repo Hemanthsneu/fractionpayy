@@ -27,3 +27,4 @@ Thumbs.db
 prep/x402-test/node_modules/
 ACCOUNTS.local.md
 *.local.md
+.vercel
