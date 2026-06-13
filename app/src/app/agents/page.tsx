@@ -1,5 +1,6 @@
 import { Bot, Zap, ShieldCheck } from "lucide-react";
 import leaderboard from "@/data/leaderboard.json";
+import { AgentsLive } from "@/components/AgentsLive";
 
 export default function AgentsPage() {
   const { generatedAt, agents } = leaderboard;
@@ -17,6 +18,8 @@ export default function AgentsPage() {
           per decision via x402.
         </p>
       </header>
+
+      <AgentsLive />
 
       {/* Our agent */}
       <div className="mb-8 rounded-2xl border border-emerald-300/30 bg-emerald-400/10 p-5 backdrop-blur">
