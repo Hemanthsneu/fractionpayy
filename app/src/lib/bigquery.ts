@@ -71,8 +71,10 @@ export async function runLiveLeaderboard(): Promise<LiveLeaderboard> {
   const bq = client();
   const [job] = await bq.createQueryJob({ query: LEADERBOARD_SQL });
   const [rows] = await job.getQueryResults();
-  const meta = job.metadata?.statistics ?? {};
-  const bytes = Number(meta.query?.totalBytesProcessed ?? meta.totalBytesProcessed ?? 0);
+  // Refresh job metadata so statistics (bytes scanned) are populated.
+  const [md] = await job.getMetadata();
+  const stats = md?.statistics ?? {};
+  const bytes = Number(stats.query?.totalBytesProcessed ?? stats.totalBytesProcessed ?? 0);
 
   const agents = rows.map((r: Record<string, unknown>) => {
     const feedbackCount = Number(r.feedback_count);

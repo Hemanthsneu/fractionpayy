@@ -11,7 +11,20 @@ export const vaultAbi = parseAbi([
   "function totalYieldPreservedUsd() view returns (uint256)",
   "function feeBps() view returns (uint16)",
   "function paymentsCount() view returns (uint256)",
+  "function registerRWA(address token, address feed, uint16 apyBps)",
   "event Settled(uint256 indexed id, address indexed payer, address indexed merchant, address rwaToken, uint256 rwaAmount, address payToken, uint256 payOut, uint256 usdValue, uint256 feeUsd, uint256 yieldPreservedPerYearUsd)",
+]);
+
+/** RWAMarket — primary market: invest USDC -> mint RWA shares. */
+export const marketAbi = parseAbi([
+  "function pricePerShareUsd(address token) view returns (uint256)",
+  "function quoteShares(address token, uint256 usdcAmount) view returns (uint256)",
+  "function invest(address token, uint256 usdcAmount) returns (uint256 shares)",
+  "function list(address token, address feed, uint16 apyBps, string assetType, string name)",
+  "function assetCount() view returns (uint256)",
+  "function treasury() view returns (address)",
+  "event Invested(address indexed investor, address indexed token, uint256 usdcIn, uint256 shares)",
+  "event Listed(address indexed token, string assetType, string name, address feed, uint16 apyBps)",
 ]);
 
 /** PropertyToken — tokenized real estate with stablecoin dividends. */

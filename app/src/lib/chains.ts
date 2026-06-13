@@ -1,5 +1,5 @@
 import { defineChain } from "viem";
-import { baseSepolia, mainnet } from "viem/chains";
+import { baseSepolia, mainnet, sepolia } from "viem/chains";
 
 /** Circle's Arc testnet — USDC is the NATIVE gas token (18 decimals as native). */
 export const arcTestnet = defineChain({
@@ -15,9 +15,19 @@ export const arcTestnet = defineChain({
   testnet: true,
 });
 
-export { baseSepolia, mainnet };
+// Ethereum Sepolia — where the ERC-8004 agent + reputation loop live (real Ethereum).
+export const ethereumSepolia = defineChain({
+  ...sepolia,
+  rpcUrls: {
+    default: { http: ["https://ethereum-sepolia-rpc.publicnode.com"] },
+  },
+});
+
+export { baseSepolia, mainnet, sepolia };
 
 /** The chain where FractionPay settlement runs for the demo. */
 export const settlementChain = arcTestnet;
 /** The chain where x402 agent micropayments run (facilitator support). */
 export const agentPaymentChain = baseSepolia;
+/** The chain where the ERC-8004 agent identity + reputation feedback live. */
+export const agentReputationChain = ethereumSepolia;
