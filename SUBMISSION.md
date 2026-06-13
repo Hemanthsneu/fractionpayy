@@ -40,21 +40,34 @@ tenth of a cent over x402 — the fee's on your receipt."
 ---
 
 ## 2) Arc — Advanced Stablecoin Logic / Agentic Economy  (~$2,150)
-**Why the product needs it:** payments settle in USDC, and the settlement is conditional and
-multi-step.
+**Why the product needs it:** the *entire RWA lifecycle* runs on programmable stablecoins —
+income distribution AND payments.
 
-**What we built:** `FractionPay.sol` on **Arc** (chain 5042002) settles RWA → USDC with
-conditional logic: appraise the portfolio → **Chainlink-style oracle price check** (staleness
-+ slippage guards) → atomic settlement to the merchant. The agentic-economy leg shows an
-autonomous agent **earning USDC nanopayments** for its compute (x402).
+**What we built — a full RWA protocol on Arc:**
+1. **Tokenize & distribute** — a $10M commercial property issued as fractional shares
+   (`PropertyToken`, the Manhattan Office Tower).
+2. **Stablecoin dividends** — rental income distributed **pro-rata in USDC** to every
+   shareholder (audited cumulative-dividend accounting; correct across transfers). This is
+   programmable stablecoin distribution / on-chain "payroll."
+3. **Yield-bearing liquidity vault** — `FractionPayVault` is an **ERC-4626** vault: LPs deposit
+   USDC and earn from protocol fees + RWA yield accrual (USD-denominated NAV across USDC +
+   EURC·FX + RWAs).
+4. **Multi-stablecoin settlement** — pay merchants in **USDC or EURC** via oracle FX.
+5. **Yield-preserving liquidation** — the optimizer sells the least-disruptive slice; the
+   contract **quantifies the yield preserved** on-chain.
 
-**Evidence:** FractionPay `0x4920038eA3f321B2C501a1e4f152a3Cc13f420C4` · MockUSDC
-`0x28bc27eE659F96109c2f58be64E9b584e534F629` · live settlement tx
-`0x347b2a9e986362dacf3642483969040c761eae95736136934d97b245f1226199` (merchant received USDC,
-block 46897366). 9 Foundry tests pass.
+Oracle safety hardened after an adversarial audit (per-feed try/catch isolation so one stale
+feed can't freeze the vault; round-completeness + staleness checks; admin feed deactivation).
+**35 Foundry tests pass.**
 
-**Demo line:** "The whole appraise-price-settle pipeline is one atomic Arc transaction in USDC
-— sub-cent gas, no partial failures."
+**Evidence (Arc, chain 5042002):** Vault `0xA7623b54108F29e99aCC492aD3B7f935379c4c25` ·
+PropertyToken `0x4B6Fd6F27aDF844a563C5b046a9A44210Ce28c8C` · USDC
+`0xea4b39ee4814A1952973FDA51BDdb96c8c3A6557` · dividend distribution tx `0xf682a342…` ·
+claim tx `0x0643f404…` · settlement tx `0x0af340bb…`.
+
+**Demo line:** "Tokenize a building, pay its rent as USDC dividends every quarter, and let
+holders spend their shares anywhere — issue, earn, and spend, all in programmable stablecoins
+on Arc."
 
 ---
 
