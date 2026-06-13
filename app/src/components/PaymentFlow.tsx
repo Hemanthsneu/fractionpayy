@@ -11,9 +11,9 @@ import { deployments, demoWallets } from "@/lib/deployments";
 import { fractionPayAbi, erc20Abi } from "@/lib/contracts";
 import type { Merchant } from "@/lib/merchants";
 import type { LiquidationPlan, Position } from "@/lib/optimizer";
-import { WorldGate } from "./WorldGate";
+import { WorldVerify } from "./WorldGate";
 
-type Step = "verify" | "amount" | "hiring" | "plan" | "paying" | "done";
+type Step = "amount" | "hiring" | "plan" | "paying" | "done";
 
 interface HireResult {
   agent: string;
@@ -29,7 +29,7 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
   const publicClient = usePublicClient({ chainId: arcTestnet.id });
   const { openFundingOptions } = useOpenFundingOptions();
 
-  const [step, setStep] = useState<Step>("verify");
+  const [step, setStep] = useState<Step>("amount");
   const [amount, setAmount] = useState("6.00");
   const [hire, setHire] = useState<HireResult | null>(null);
   const [uniRef, setUniRef] = useState<{ routeString: string; priceImpact: number } | null>(null);
@@ -119,17 +119,6 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
   return (
     <div className="mx-auto w-full max-w-md">
       <AnimatePresence mode="wait">
-        {step === "verify" && (
-          <motion.div
-            key="verify"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-          >
-            <WorldGate onVerified={() => setStep("amount")} />
-          </motion.div>
-        )}
-
         {step === "amount" && (
           <motion.div
             key="amount"
@@ -167,6 +156,7 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
                 Connect a wallet (top right) to pay — plan preview works without one.
               </p>
             )}
+            <WorldVerify />
             {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
           </motion.div>
         )}

@@ -1,58 +1,66 @@
 "use client";
 
-import { IDKitWidget, VerificationLevel, type ISuccessResult } from "@worldcoin/idkit";
-import { ShieldCheck, UserCheck } from "lucide-react";
+import { useState } from "react";
+import { IDKitWidget, useIDKit, VerificationLevel, type ISuccessResult } from "@worldcoin/idkit";
+import { ShieldCheck, Loader2, CheckCircle2 } from "lucide-react";
 
 const APP_ID = (process.env.NEXT_PUBLIC_WORLD_APP_ID ?? "") as `app_${string}`;
 const ACTION = process.env.NEXT_PUBLIC_WORLD_ACTION_ID ?? "verify-human";
 
 /**
- * One-time proof-of-personhood gate shown before the first payment.
- * verification_level=device → any World App user can pass (no Orb needed).
- * Includes a demo-mode skip so a flaky network never blocks the stage demo.
+ * Optional proof-of-personhood. Uses the hook-controlled IDKit pattern
+ * (useIDKit + setOpen) rather than the render-prop child, which infinite-loops
+ * under React 19. OPTIONAL and off the critical payment path — never blocks a payment.
  */
-export function WorldGate({ onVerified }: { onVerified: () => void }) {
+export function WorldVerify() {
+  const { setOpen } = useIDKit();
+  const [status, setStatus] = useState<"idle" | "verifying" | "done">("idle");
+
   async function handleVerify(result: ISuccessResult) {
+    setStatus("verifying");
     const res = await fetch("/api/verify-world", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(result),
     });
     const data = await res.json();
-    if (!data.ok) throw new Error(data.error ?? "verification failed");
+    if (!data.ok) {
+      setStatus("idle");
+      throw new Error(data.error ?? "verification failed");
+    }
+  }
+
+  if (status === "done") {
+    return (
+      <div className="mt-3 flex items-center justify-center gap-1.5 rounded-lg bg-emerald-400/10 py-2 text-xs text-emerald-300">
+        <CheckCircle2 size={14} /> Verified human · World ID
+      </div>
+    );
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur">
-      <ShieldCheck className="mx-auto text-cyan-300" size={28} />
-      <p className="mt-3 font-semibold">Verify you&apos;re human</p>
-      <p className="mt-1 text-sm text-white/50">
-        One-time, sybil-resistant check before your first payment. No personal data shared.
-      </p>
-
-      <IDKitWidget
-        app_id={APP_ID}
-        action={ACTION}
-        verification_level={VerificationLevel.Device}
-        handleVerify={handleVerify}
-        onSuccess={onVerified}
-      >
-        {({ open }) => (
-          <button
-            onClick={open}
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-sky-400 py-3 font-semibold text-black transition hover:opacity-90"
-          >
-            <UserCheck size={18} /> Verify with World ID
-          </button>
-        )}
-      </IDKitWidget>
-
+    <>
+      {APP_ID && (
+        <IDKitWidget
+          app_id={APP_ID}
+          action={ACTION}
+          verification_level={VerificationLevel.Device}
+          handleVerify={handleVerify}
+          onSuccess={() => setStatus("done")}
+        />
+      )}
       <button
-        onClick={onVerified}
-        className="mt-3 text-xs text-white/40 underline-offset-2 transition hover:text-white/70 hover:underline"
+        onClick={() => setOpen(true)}
+        disabled={status === "verifying"}
+        className="mt-3 flex w-full items-center justify-center gap-1.5 text-xs text-white/50 transition hover:text-white/80 disabled:opacity-50"
       >
-        Skip (demo mode)
+        {status === "verifying" ? (
+          <Loader2 size={13} className="animate-spin" />
+        ) : (
+          <ShieldCheck size={13} />
+        )}
+        Verify you&apos;re human with World ID (optional)
       </button>
-    </div>
+    </>
   );
 }
