@@ -1,0 +1,29 @@
+# === Environment & Secrets ===
+.env
+.env.local
+.env.*.local
+*.local
+gcp-service-account.json
+
+# === Node ===
+node_modules/
+.next/
+out/
+
+# === Foundry ===
+contracts/cache/
+contracts/out/
+contracts/broadcast/
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === IDE ===
+.vscode/
+.idea/
+
+# === Prep test node_modules ===
+prep/x402-test/node_modules/
+ACCOUNTS.local.md
+*.local.md

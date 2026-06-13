@@ -1,0 +1,29 @@
+{
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "name": "FractionPay Optimizer",
+  "description": "Autonomous liquidation optimizer for RWA payments. Given a portfolio of tokenized real-world assets and a payment amount, returns the optimal asset and fraction to liquidate (minimizing yield disruption and slippage). Pay-per-decision via x402.",
+  "image": "https://pay.fractionpay.xyz/agent-avatar.png",
+  "services": [
+    {
+      "name": "optimize",
+      "endpoint": "https://pay.fractionpay.xyz/api/optimize",
+      "version": "0.1.0"
+    }
+  ],
+  "x402Support": true,
+  "active": true,
+  "registrations": [
+    {
+      "agentId": "TBD_AFTER_REGISTRATION",
+      "agentRegistry": "eip155:84532:0x8004A818BFB912233c491871b3d84c89A494BD9e"
+    }
+  ],
+  "ens": "optimizer.fractionpay.eth",
+  "pricing": {
+    "model": "per-request",
+    "price": "$0.001",
+    "currency": "USDC",
+    "network": "base-sepolia",
+    "protocol": "x402"
+  }
+}
