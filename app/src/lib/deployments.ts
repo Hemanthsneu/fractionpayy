@@ -15,50 +15,45 @@ export interface RwaInfo {
 
 export interface Deployment {
   chainId: number;
-  fractionPay: Address;
+  /** FractionPay v2 — ERC-4626 yield-bearing vault + payment engine. */
+  vault: Address;
   usdc: Address;
+  eurc: Address;
   rwas: RwaInfo[];
 }
-
-const ZERO = "0x0000000000000000000000000000000000000000" as Address;
 
 export const deployments: Record<string, Deployment> = {
   arcTestnet: {
     chainId: 5042002,
-    fractionPay: "0x4920038eA3f321B2C501a1e4f152a3Cc13f420C4",
-    usdc: "0x28bc27eE659F96109c2f58be64E9b584e534F629",
+    vault: "0x81474BC97a075e47a718d901a11116C1e3CA4fA4",
+    usdc: "0xD85f3530aab65E0DB7EdE2e8d1E701dDbF049D20",
+    eurc: "0xD8194136c2139c2fCA137C4361F04a4B880905e9",
     rwas: [
       {
         symbol: "TBILL",
-        name: "US T-Bill 3M 2026",
-        token: "0xc156eEe9e4887DFf0dEFbF7bF03888c1240cF63F",
-        feed: "0xf2CDA2580D7472138E721F40880551909514c42E",
+        name: "US T-Bill 3M",
+        token: "0xa8028dAE4D439c9324Dc28725D9063C2fBb74df4",
+        feed: "0xFA4679f91a4b27bEB348b2df97ED3F17A331bFB6",
         yieldBps: 450,
         emoji: "🏛️",
       },
       {
         symbol: "XAUM",
         name: "Tokenized Gold oz",
-        token: "0x91Cb5809968B494c85356Fa23288a35Fe2a5DD63",
-        feed: "0x288c3361d370Fc5e21919A105eA12b4Db0d2BC86",
+        token: "0xf299113F88349db5959366e704C77ab263b1816D",
+        feed: "0x8cECAC513639df4c100eAF4B40C5e3d56F6a4dd5",
         yieldBps: 0,
         emoji: "🥇",
       },
       {
         symbol: "MREIT",
         name: "Manhattan REIT Share",
-        token: "0xD7feacD181d3F9c5BaB05b4BF66b8E864cF29a02",
-        feed: "0xF6926fBce62A62B25EE2C9c8B34a3970FD48132e",
+        token: "0x1b52d497908dfC908525f1027D306883DC3415c5",
+        feed: "0x7EbcBE526b06C589F3b6187c8881B0358E49F94c",
         yieldBps: 610,
         emoji: "🏙️",
       },
     ],
-  },
-  baseSepolia: {
-    chainId: 84532,
-    fractionPay: ZERO, // TODO: fill after deploy
-    usdc: ZERO,
-    rwas: [],
   },
 };
 

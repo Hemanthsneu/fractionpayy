@@ -1,13 +1,17 @@
 import { parseAbi } from "viem";
 
-export const fractionPayAbi = parseAbi([
-  "function quote(address rwaToken, uint256 rwaAmount) view returns (uint256 usdcOut, int256 price)",
-  "function payWithRWA(address merchant, address rwaToken, uint256 rwaAmount, uint256 minUsdcOut) returns (uint256 paymentId, uint256 usdcOut)",
+/** FractionPay v2 — ERC-4626 yield-bearing vault + multi-stablecoin payment engine. */
+export const vaultAbi = parseAbi([
+  "function quote(address rwaToken, uint256 rwaAmount, address payToken) view returns (uint256 payOut, uint256 usdValue, uint256 feeUsd)",
+  "function pay(address merchant, address rwaToken, uint256 rwaAmount, address payToken, uint256 minOut) returns (uint256 id, uint256 payOut)",
+  "function rwaUsdValue(address token, uint256 amount) view returns (uint256)",
+  "function totalAssets() view returns (uint256)",
+  "function pricePerShare() view returns (uint256)",
+  "function totalFeesUsd() view returns (uint256)",
+  "function totalYieldPreservedUsd() view returns (uint256)",
+  "function feeBps() view returns (uint16)",
   "function paymentsCount() view returns (uint256)",
-  "function payments(uint256) view returns (address payer, address merchant, address rwaToken, uint256 rwaAmount, uint256 usdcAmount, int256 priceUsed, uint64 timestamp)",
-  "function depositLiquidity(uint256 amount)",
-  "function usdc() view returns (address)",
-  "event PaymentSettled(uint256 indexed paymentId, address indexed payer, address indexed merchant, address rwaToken, uint256 rwaAmount, uint256 usdcAmount, int256 priceUsed)",
+  "event Settled(uint256 indexed id, address indexed payer, address indexed merchant, address rwaToken, uint256 rwaAmount, address payToken, uint256 payOut, uint256 usdValue, uint256 feeUsd, uint256 yieldPreservedPerYearUsd)",
 ]);
 
 export const erc20Abi = parseAbi([

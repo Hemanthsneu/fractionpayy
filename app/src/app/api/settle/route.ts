@@ -12,14 +12,16 @@ import { createWalletClient, createPublicClient, http, parseUnits, isAddress, ty
 import { privateKeyToAccount } from "viem/accounts";
 import { arcTestnet } from "@/lib/chains";
 import { deployments } from "@/lib/deployments";
-import { fractionPayAbi, erc20Abi } from "@/lib/contracts";
+import { vaultAbi, erc20Abi } from "@/lib/contracts";
 
 export const dynamic = "force-dynamic";
 
 const pub = createPublicClient({ chain: arcTestnet, transport: http() });
 
 export async function POST(request: NextRequest) {
-  const { symbol, sellAmount, merchant, amountUsd } = await request.json().catch(() => ({}));
+  const { symbol, sellAmount, merchant, amountUsd, payToken } = await request
+    .json()
+    .catch(() => ({}));
 
   const pk = process.env.BUYER_PRIVATE_KEY;
   if (!pk) return NextResponse.json({ error: "settlement wallet not configured" }, { status: 500 });
@@ -29,8 +31,11 @@ export async function POST(request: NextRequest) {
   const rwa = dep.rwas.find((r) => r.symbol === symbol);
   if (!rwa) return NextResponse.json({ error: `unknown RWA ${symbol}` }, { status: 400 });
 
+  // Settlement currency: default USDC; "EURC" pays the merchant in euros via oracle FX.
+  const settleToken: Address = payToken === "EURC" ? dep.eurc : dep.usdc;
+
   const sellWei = parseUnits(Number(sellAmount).toFixed(18), 18);
-  const minOut = parseUnits((Number(amountUsd) * 0.98).toFixed(6), 6); // 2% slippage guard
+  const minOut = parseUnits((Number(amountUsd) * 0.95).toFixed(6), 6); // 5% guard (FX headroom)
 
   const account = privateKeyToAccount(pk as `0x${string}`);
   const wallet = createWalletClient({ account, chain: arcTestnet, transport: http() });
@@ -40,15 +45,15 @@ export async function POST(request: NextRequest) {
       address: rwa.token,
       abi: erc20Abi,
       functionName: "approve",
-      args: [dep.fractionPay, sellWei],
+      args: [dep.vault, sellWei],
     });
     await pub.waitForTransactionReceipt({ hash: approveTx });
 
     const tx = await wallet.writeContract({
-      address: dep.fractionPay,
-      abi: fractionPayAbi,
-      functionName: "payWithRWA",
-      args: [merchant as Address, rwa.token, sellWei, minOut],
+      address: dep.vault,
+      abi: vaultAbi,
+      functionName: "pay",
+      args: [merchant as Address, rwa.token, sellWei, settleToken, minOut],
     });
     const receipt = await pub.waitForTransactionReceipt({ hash: tx });
 
@@ -59,6 +64,7 @@ export async function POST(request: NextRequest) {
       merchant,
       symbol,
       sellAmount,
+      payToken: payToken === "EURC" ? "EURC" : "USDC",
     });
   } catch (e) {
     return NextResponse.json({ ok: false, error: (e as Error).message.split("\n")[0] }, { status: 502 });
