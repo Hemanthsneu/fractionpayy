@@ -59,7 +59,7 @@ export const deployments: Record<string, Deployment> = {
       },
       {
         symbol: "MREIT",
-        name: "Manhattan REIT Share",
+        name: "Brooklyn Warehouse REIT",
         token: "0xa112A86390A3FdE652b264812B3Ee679a74578e6",
         feed: "0x52ce5E74C215270c13886c402eA8aC28D4a795c4",
         yieldBps: 610,
