@@ -14,10 +14,7 @@ export interface Merchant {
   source: "ens" | "registry";
 }
 
-/**
- * Built-in fallback registry — guarantees the demo NEVER breaks on slow/missing
- * ENS records. Mirrors the subnames we set up under fractionpay.eth.
- */
+
 const FALLBACK: Record<string, Omit<Merchant, "source">> = {
   "coffeeshop.fractionpay.eth": {
     ensName: "coffeeshop.fractionpay.eth",
@@ -50,10 +47,7 @@ const ensClient = createPublicClient({
   transport: http(process.env.ETH_MAINNET_RPC_URL || "https://ethereum-rpc.publicnode.com"),
 });
 
-/**
- * Resolve a merchant by ENS name: live mainnet ENS first (address + text
- * records), built-in registry as instant fallback.
- */
+
 export async function resolveMerchant(rawName: string): Promise<Merchant | null> {
   const name = decodeURIComponent(rawName).toLowerCase();
 

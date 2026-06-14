@@ -85,7 +85,10 @@ export interface LiveLeaderboard {
 /** Run the leaderboard as a real BigQuery job; returns rows + job stats. */
 export async function runLiveLeaderboard(): Promise<LiveLeaderboard> {
   const bq = client();
-  const [job] = await bq.createQueryJob({ query: LEADERBOARD_SQL });
+  // Disable the query cache so the on-demand "Run live" button always performs a
+  // real scan and reports the true bytes processed (a cache hit bills 0 bytes,
+  // which made the panel misleadingly show ~0 GB).
+  const [job] = await bq.createQueryJob({ query: LEADERBOARD_SQL, useQueryCache: false });
   const [rows] = await job.getQueryResults();
   // Refresh job metadata so statistics (bytes scanned) are populated.
   const [md] = await job.getMetadata();
@@ -137,7 +140,7 @@ export interface RegistrationStats {
 /** Run a real BigQuery job: ERC-8004 agent registrations per week on mainnet. */
 export async function runRegistrationStats(): Promise<RegistrationStats> {
   const bq = client();
-  const [job] = await bq.createQueryJob({ query: REGISTRATIONS_SQL });
+  const [job] = await bq.createQueryJob({ query: REGISTRATIONS_SQL, useQueryCache: false });
   const [rows] = await job.getQueryResults();
   const [md] = await job.getMetadata();
   const q = md?.statistics?.query ?? {};
@@ -204,10 +207,10 @@ export async function seedLeaderboard(): Promise<{ rows: number }> {
       (a) =>
         `('${a.agentId}', 'agent #${a.agentId}', ${a.feedbackCount}, ${a.uniqueClients}, ${a.reputationScore}, FALSE, CURRENT_TIMESTAMP())`
     );
-  // Our agent: high client-diversity, starts just below the volume-farming
-  // leaders so a few feedbacks visibly overtake them and it climbs to #1.
+  // Our agent: a credible new entrant — starts around 5th-6th with high client
+  // diversity, so each on-chain feedback visibly climbs it up the board.
   values.push(
-    `('${OUR_AGENT_ID}', '${OUR_AGENT_NAME}', 129, 125, ${score(129, 125)}, TRUE, CURRENT_TIMESTAMP())`
+    `('${OUR_AGENT_ID}', '${OUR_AGENT_NAME}', 47, 45, ${score(47, 45)}, TRUE, CURRENT_TIMESTAMP())`
   );
   await bq.query({
     query: `INSERT INTO ${FQTN} (agent_id,name,feedback_count,unique_clients,reputation_score,is_ours,updated_at) VALUES ${values.join(",")}`,
