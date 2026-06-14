@@ -1,21 +1,44 @@
 "use client";
 
-import { useState } from "react";
-import { useAccount } from "wagmi";
+import { useCallback, useEffect, useState } from "react";
+import { useAccount, useBalance } from "wagmi";
 import { Loader2, Coins, CheckCircle2, Droplets } from "lucide-react";
+import { arcTestnet } from "@/lib/chains";
+
+const FUNDED_KEY = (addr: string) => `fp:funded:${addr.toLowerCase()}`;
 
 /**
- * One-tap demo faucet. Arc uses USDC for gas, so a fresh wallet can't sign
+ * One-tap demo faucet. Arc uses USDC as its gas token, so a fresh wallet can't sign
  * anything yet — this server-funds the CONNECTED address with native gas +
  * test USDC + a starter RWA basket, after which every action is wallet-signed.
+ *
+ * Persists the funded state in sessionStorage (keyed by address) so navigation
+ * away and back doesn't re-show the button. Also auto-detects wallets that
+ * already have native Arc gas (>0.5 USDC) and skips the prompt.
  */
 export function FundWallet({ onFunded, compact }: { onFunded?: () => void; compact?: boolean }) {
   const { address, isConnected } = useAccount();
+  const { data: nativeBal } = useBalance({ address, chainId: arcTestnet.id });
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
 
-  async function fund() {
+  // Restore persisted funded state or auto-detect funded wallets.
+  useEffect(() => {
+    if (!address) return;
+    // 1. Check sessionStorage first
+    if (sessionStorage.getItem(FUNDED_KEY(address))) {
+      setDone(true);
+      return;
+    }
+    // 2. Auto-detect: if the wallet already has >0.5 native USDC, it's funded.
+    if (nativeBal && nativeBal.value > BigInt("500000000000000000")) {
+      setDone(true);
+      sessionStorage.setItem(FUNDED_KEY(address), "1");
+    }
+  }, [address, nativeBal]);
+
+  const fund = useCallback(async () => {
     if (!address) return;
     setBusy(true);
     setError("");
@@ -28,13 +51,14 @@ export function FundWallet({ onFunded, compact }: { onFunded?: () => void; compa
       const data = await res.json();
       if (!data.ok) throw new Error(data.error ?? "faucet failed");
       setDone(true);
+      sessionStorage.setItem(FUNDED_KEY(address), "1");
       onFunded?.();
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setBusy(false);
     }
-  }
+  }, [address, onFunded]);
 
   if (!isConnected) return null;
 
