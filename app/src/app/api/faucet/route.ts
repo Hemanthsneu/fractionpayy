@@ -98,11 +98,20 @@ export async function POST(request: NextRequest) {
       nonce++;
     }
 
-    // 4. property shares — transfer from the treasury so the wallet earns dividends.
-    const propTx = await wallet.writeContract({ address: dep.property, abi: erc20Abi, functionName: "transfer", args: [to, PROPERTY_GRANT], nonce });
-    txs.property = propTx;
-    hashes.push(propTx);
-    nonce++;
+    // 4. property shares — transfer from the treasury so the wallet earns
+    // dividends. NON-FATAL: the treasury can run out of shares; if so, skip it
+    // (gas + USDC + RWAs are what the core invest/pay demo needs).
+    try {
+      const propBal = (await pub.readContract({ address: dep.property, abi: erc20Abi, functionName: "balanceOf", args: [account.address] })) as bigint;
+      if (propBal >= PROPERTY_GRANT) {
+        const propTx = await wallet.writeContract({ address: dep.property, abi: erc20Abi, functionName: "transfer", args: [to, PROPERTY_GRANT], nonce });
+        txs.property = propTx;
+        hashes.push(propTx);
+        nonce++;
+      }
+    } catch {
+      /* treasury out of property shares — non-fatal */
+    }
 
     // confirm everything before responding so balances are queryable immediately.
     await Promise.all(hashes.map((h) => pub.waitForTransactionReceipt({ hash: h })));
@@ -114,7 +123,7 @@ export async function POST(request: NextRequest) {
         nativeGasUsdc: Number(formatEther(GAS_TOPUP)),
         usdc: 50000,
         rwaBasket: Object.keys(RWA_GRANT),
-        propertyShares: 10,
+        propertyShares: txs.property ? 10 : 0,
       },
       txs,
     });
