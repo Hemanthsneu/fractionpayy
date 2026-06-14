@@ -1,4 +1,5 @@
 import { AdminTokenize } from "@/components/AdminTokenize";
+import { AdminGate } from "@/components/Gate";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,9 @@ export default function AdminPage() {
           deployed on Arc, registered as spendable in the vault, and listed for investors.
         </p>
       </header>
-      <AdminTokenize />
+      <AdminGate>
+        <AdminTokenize />
+      </AdminGate>
     </div>
   );
 }

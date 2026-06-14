@@ -6,18 +6,18 @@
  * Server-side (uses the demo wallet, which is both issuer and holder).
  */
 import { NextRequest, NextResponse } from "next/server";
-import { createPublicClient, createWalletClient, http, formatUnits, parseUnits } from "viem";
+import { createPublicClient, createWalletClient, http, formatUnits, parseUnits, isAddress, type Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { arcTestnet } from "@/lib/chains";
 import { deployments, demoWallets } from "@/lib/deployments";
-import { propertyTokenAbi } from "@/lib/contracts";
+import { propertyTokenAbi, erc20Abi } from "@/lib/contracts";
 
 export const dynamic = "force-dynamic";
 
 const pub = createPublicClient({ chain: arcTestnet, transport: http() });
 const PROP = deployments.arcTestnet.property;
 
-async function readState() {
+async function readState(holder: Address = demoWallets.buyer) {
   const [valuation, yieldBps, supply, totalDist, distCount, lastAt, bal, claimable] =
     await Promise.all([
       pub.readContract({ address: PROP, abi: propertyTokenAbi, functionName: "valuationUsd" }),
@@ -26,8 +26,8 @@ async function readState() {
       pub.readContract({ address: PROP, abi: propertyTokenAbi, functionName: "totalDividendsDistributed" }),
       pub.readContract({ address: PROP, abi: propertyTokenAbi, functionName: "distributionCount" }),
       pub.readContract({ address: PROP, abi: propertyTokenAbi, functionName: "lastDistributionAt" }),
-      pub.readContract({ address: PROP, abi: propertyTokenAbi, functionName: "balanceOf", args: [demoWallets.buyer] }),
-      pub.readContract({ address: PROP, abi: propertyTokenAbi, functionName: "withdrawableDividendOf", args: [demoWallets.buyer] }),
+      pub.readContract({ address: PROP, abi: propertyTokenAbi, functionName: "balanceOf", args: [holder] }),
+      pub.readContract({ address: PROP, abi: propertyTokenAbi, functionName: "withdrawableDividendOf", args: [holder] }),
     ]);
   return {
     property: PROP,
@@ -45,9 +45,11 @@ async function readState() {
   };
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const raw = request.nextUrl.searchParams.get("address");
+  const holder = raw && isAddress(raw) ? (raw as Address) : demoWallets.buyer;
   try {
-    return NextResponse.json(await readState());
+    return NextResponse.json(await readState(holder));
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 502 });
   }
@@ -66,6 +68,14 @@ export async function POST(request: NextRequest) {
     if (action === "distribute") {
       // Quarterly rent for the issued float: shares * $1,000 * 6% / 4 ≈ $1,500.
       const amt = parseUnits(String(amountUsd ?? 1500), 6);
+      // distributeDividends pulls USDC via transferFrom → must approve first.
+      const approveTx = await wallet.writeContract({
+        address: deployments.arcTestnet.usdc,
+        abi: erc20Abi,
+        functionName: "approve",
+        args: [PROP, amt],
+      });
+      await pub.waitForTransactionReceipt({ hash: approveTx });
       tx = await wallet.writeContract({
         address: PROP,
         abi: propertyTokenAbi,

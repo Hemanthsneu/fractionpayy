@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { PropertyDividends } from "@/components/PropertyDividends";
+import { WalletGate } from "@/components/Gate";
 
 export const dynamic = "force-dynamic";
 
@@ -27,11 +28,13 @@ export default async function PropertyPage() {
           pro-rata on Arc — and the same shares are spendable through the FractionPay vault.
         </p>
       </header>
-      {state?.error ? (
-        <p className="text-red-400">Could not load property: {state.error}</p>
-      ) : (
-        <PropertyDividends initial={state} />
-      )}
+      <WalletGate subtitle="Connect a wallet to view dividends, distribute rental income, and claim your share.">
+        {state?.error ? (
+          <p className="text-red-400">Could not load property: {state.error}</p>
+        ) : (
+          <PropertyDividends initial={state} />
+        )}
+      </WalletGate>
     </div>
   );
 }

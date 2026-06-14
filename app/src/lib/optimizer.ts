@@ -64,3 +64,18 @@ export function planLiquidation(positions: Position[], amountUsd: number): Liqui
     reason,
   };
 }
+
+/**
+ * Score the agent's PERFORMANCE on a single optimization, 0–100.
+ *
+ * The agent's mandate is to minimize yield disruption per dollar spent. The
+ * less annual income it sacrifices to cover the payment, the better it did —
+ * a zero-yield asset (perfect choice) scores 100. This is the value posted
+ * on-chain as ERC-8004 feedback and what drives the reputation re-rank, so the
+ * leaderboard reflects *how well the agent actually optimized*, not a thumbs-up.
+ */
+export function performanceScore(plan: LiquidationPlan, amountUsd: number): number {
+  const ratio = plan.annualYieldLostUsd / Math.max(amountUsd, 1); // 0 (ideal) .. ~0.07
+  const score = Math.round(100 - ratio * 250); // 0% yield lost → 100; ~6% APY → ~85
+  return Math.max(50, Math.min(100, score));
+}

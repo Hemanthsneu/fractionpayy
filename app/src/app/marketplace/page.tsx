@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { Marketplace } from "@/components/Marketplace";
+import { WalletGate } from "@/components/Gate";
 
 export const dynamic = "force-dynamic";
 
@@ -28,11 +29,13 @@ export default async function MarketplacePage() {
           </Link>
         </p>
       </header>
-      {data?.error ? (
-        <p className="text-red-400">Could not load marketplace: {data.error}</p>
-      ) : (
-        <Marketplace assets={data.assets ?? []} />
-      )}
+      <WalletGate subtitle="Connect a wallet to invest in tokenized real-world assets. Shares mint to your portfolio and stay spendable via FractionPay.">
+        {data?.error ? (
+          <p className="text-red-400">Could not load marketplace: {data.error}</p>
+        ) : (
+          <Marketplace assets={data.assets ?? []} />
+        )}
+      </WalletGate>
     </div>
   );
 }

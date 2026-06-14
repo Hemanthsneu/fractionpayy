@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, Activity, ArrowUp } from "lucide-react";
+import { useIsLoggedIn, useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { Loader2, Play, ArrowUp, ExternalLink, Wallet } from "lucide-react";
+import { txUrl, addressUrl, shortHash } from "@/lib/explorer";
+
+const ETH_AGENT_ID = "6553"; // optimizer.fractionpay.eth on Ethereum Sepolia
+const AGENT_WALLET = "0x69C4b79F998e92267f116f12A3D9764ac77b8F30";
 
 interface Row {
   agentId: string;
@@ -19,39 +24,52 @@ export function LiveLeaderboard() {
   const [busy, setBusy] = useState(false);
   const [flash, setFlash] = useState("");
   const [prevRank, setPrevRank] = useState<number | null>(null);
-
-  async function load() {
-    const res = await fetch("/api/agents", { cache: "no-store" });
-    const data = await res.json();
-    setSource(data.source ?? "");
-    setRows(data.agents ?? []);
-  }
+  const [lastTx, setLastTx] = useState<string | null>(null);
+  const isLoggedIn = useIsLoggedIn();
+  const { setShowAuthFlow } = useDynamicContext();
 
   useEffect(() => {
-    load();
+    (async () => {
+      const res = await fetch("/api/agents", { cache: "no-store" });
+      const data = await res.json();
+      setSource(data.source ?? "");
+      setRows(data.agents ?? []);
+    })();
   }, []);
 
   const ourRank = rows.findIndex((r) => r.isOurs);
 
-  async function postFeedback() {
+  async function runAgent() {
+    if (!isLoggedIn) {
+      setShowAuthFlow(true);
+      return;
+    }
     setBusy(true);
     setFlash("");
+    setLastTx(null);
     setPrevRank(ourRank >= 0 ? ourRank + 1 : null);
     try {
+      // Run the agent on a real optimization task; it's rated by how well it
+      // performed (yield preserved), and that score drives the on-chain feedback
+      // + re-rank. No manual thumbs-up — reputation tracks performance.
       const res = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ score: 100, newClient: true }),
+        body: JSON.stringify({ simulate: true }),
       });
       const data = await res.json();
       if (data.leaderboard) setRows(data.leaderboard);
-      setFlash(
-        data.feedbackTx
-          ? "Feedback posted on Ethereum → BigQuery re-ranked ✓"
-          : "BigQuery leaderboard re-ranked ✓ (on-chain write pending ETH setup)"
-      );
+      if (data.feedbackTx) setLastTx(data.feedbackTx);
+      if (data.plan) {
+        setFlash(
+          `Agent optimized a $${data.amountUsd} payment → sold ${data.plan.symbol}, scored ${data.score}/100` +
+            (data.feedbackTx ? " · feedback on Ethereum ✓" : " · re-ranked ✓")
+        );
+      } else {
+        setFlash(data.feedbackTx ? "Feedback posted on Ethereum → re-ranked ✓" : "Re-ranked ✓");
+      }
     } catch {
-      setFlash("could not post feedback");
+      setFlash("could not run the agent");
     } finally {
       setBusy(false);
     }
@@ -69,13 +87,41 @@ export function LiveLeaderboard() {
           </span>
         </h2>
         <button
-          onClick={postFeedback}
+          onClick={runAgent}
           disabled={busy}
           className="ml-auto flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
         >
-          {busy ? <Loader2 size={15} className="animate-spin" /> : <Activity size={15} />}
-          Rate our agent (post feedback)
+          {busy ? (
+            <Loader2 size={15} className="animate-spin" />
+          ) : isLoggedIn ? (
+            <Play size={15} />
+          ) : (
+            <Wallet size={15} />
+          )}
+          {isLoggedIn ? "Run the agent on a payment" : "Connect wallet to run the agent"}
         </button>
+      </div>
+
+      {/* on-chain identity — always demonstrable */}
+      <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-white/40">
+        <a
+          href={addressUrl("ethereumSepolia", AGENT_WALLET)}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-1 hover:text-cyan-300"
+        >
+          ERC-8004 agent #{ETH_AGENT_ID} · {shortHash(AGENT_WALLET)} <ExternalLink size={11} />
+        </a>
+        {lastTx && (
+          <a
+            href={txUrl("ethereumSepolia", lastTx)}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1 text-emerald-300 hover:underline"
+          >
+            latest feedback tx: {shortHash(lastTx)} <ExternalLink size={11} />
+          </a>
+        )}
       </div>
 
       {flash && (
@@ -145,7 +191,7 @@ export function LiveLeaderboard() {
       </div>
       <p className="mt-3 text-xs text-white/30">
         {isLive
-          ? "Live table fractionpay.reputation.leaderboard · re-ranks when feedback posts on Ethereum · score = feedback × client-diversity"
+          ? "Automatic: each agent run is scored on yield preserved → posted on Ethereum → fractionpay.reputation.leaderboard re-ranks. Good performance = a satisfied new client (diversity ↑), so rank tracks real performance."
           : "Cached mainnet snapshot · run /api/agents/setup to enable the live re-ranking table"}
       </p>
     </div>

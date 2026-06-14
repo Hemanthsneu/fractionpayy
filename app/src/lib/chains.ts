@@ -24,10 +24,3 @@ export const ethereumSepolia = defineChain({
 });
 
 export { baseSepolia, mainnet, sepolia };
-
-/** The chain where FractionPay settlement runs for the demo. */
-export const settlementChain = arcTestnet;
-/** The chain where x402 agent micropayments run (facilitator support). */
-export const agentPaymentChain = baseSepolia;
-/** The chain where the ERC-8004 agent identity + reputation feedback live. */
-export const agentReputationChain = ethereumSepolia;

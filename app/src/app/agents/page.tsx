@@ -1,5 +1,6 @@
 import { Bot, Zap, ShieldCheck } from "lucide-react";
 import { AgentsLive } from "@/components/AgentsLive";
+import { AgentInsights } from "@/components/AgentInsights";
 import { LiveLeaderboard } from "@/components/LiveLeaderboard";
 
 export default function AgentsPage() {
@@ -20,6 +21,8 @@ export default function AgentsPage() {
 
       <AgentsLive />
 
+      <AgentInsights />
+
       {/* Our agent */}
       <div className="mb-8 rounded-2xl border border-emerald-300/30 bg-emerald-400/10 p-5 backdrop-blur">
         <div className="flex flex-wrap items-center gap-3">
@@ -28,12 +31,12 @@ export default function AgentsPage() {
             <p className="font-bold">
               optimizer.fractionpay.eth{" "}
               <span className="ml-1 rounded-full bg-emerald-400/20 px-2 py-0.5 text-xs">
-                agent #7031
+                ERC-8004 #6553
               </span>
             </p>
             <p className="text-xs text-white/50">
-              ERC-8004 Identity Registry · Base Sepolia · treasury is a Privy server wallet
-              (0xb61A…E0E6) · earns $0.001 USDC per decision via x402
+              ENS optimizer.fractionpay.eth → 0x69C4…8F30 · ERC-8004 identity on Ethereum ·
+              earns $0.001 USDC per decision via x402 · rated on-chain
             </p>
           </div>
           <div className="ml-auto flex gap-2 text-xs">

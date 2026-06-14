@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Database, Loader2, ChevronDown } from "lucide-react";
+import { useIsLoggedIn, useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { Database, Loader2, ChevronDown, Wallet } from "lucide-react";
 
 interface LiveResult {
   agents: { agentId: string; feedbackCount: number; uniqueClients: number; reputationScore: number }[];
   jobId: string;
   gbProcessed: number;
+  cacheHit: boolean;
   ranAt: string;
   projectId: string;
   sql: string;
@@ -17,8 +19,14 @@ export function AgentsLive() {
   const [busy, setBusy] = useState(false);
   const [showSql, setShowSql] = useState(false);
   const [error, setError] = useState("");
+  const isLoggedIn = useIsLoggedIn();
+  const { setShowAuthFlow } = useDynamicContext();
 
   async function run() {
+    if (!isLoggedIn) {
+      setShowAuthFlow(true);
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -49,8 +57,14 @@ export function AgentsLive() {
           disabled={busy}
           className="ml-auto flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
         >
-          {busy ? <Loader2 size={15} className="animate-spin" /> : <Database size={15} />}
-          {busy ? "Querying mainnet…" : "Run live BigQuery query"}
+          {busy ? (
+            <Loader2 size={15} className="animate-spin" />
+          ) : isLoggedIn ? (
+            <Database size={15} />
+          ) : (
+            <Wallet size={15} />
+          )}
+          {busy ? "Querying mainnet…" : isLoggedIn ? "Run live BigQuery query" : "Connect wallet to run query"}
         </button>
       </div>
 
@@ -60,10 +74,17 @@ export function AgentsLive() {
         <div className="mt-4">
           <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
             <Stat label="GCP project" value={data.projectId} />
-            <Stat label="Data scanned" value={`${data.gbProcessed} GB`} />
+            <Stat label="Data scanned" value={data.cacheHit ? `cached · ~${data.gbProcessed} GB` : `${data.gbProcessed} GB`} />
             <Stat label="BigQuery job" value={data.jobId.slice(0, 14) + "…"} />
             <Stat label="Agents ranked" value={String(data.agents.length)} />
           </div>
+          <p className="mt-2 rounded-lg bg-white/5 px-3 py-2 text-[11px] leading-relaxed text-white/50">
+            This is the <span className="text-sky-300">raw mainnet ranking</span> — pure ERC-8004 data, our
+            agent isn&apos;t here because it has no mainnet feedback yet. The{" "}
+            <span className="text-emerald-300">marketplace leaderboard below</span> slots our agent in by score
+            and re-ranks live as it earns feedback.
+            {data.cacheHit && " (BigQuery served a cached result, so 0 bytes were billed this run.)"}
+          </p>
 
           <button
             onClick={() => setShowSql((s) => !s)}

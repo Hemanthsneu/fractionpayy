@@ -13,9 +13,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { withX402 } from "x402-next";
 import { planLiquidation, type Position } from "@/lib/optimizer";
 
-// The agent's treasury — a Privy-managed server wallet. x402 fees settle here.
-const AGENT_WALLET = (process.env.AGENT_WALLET_ADDRESS ??
-  "0xb61Aef7A3B01269545BaB0BF1e199065A1BCE0E6") as `0x${string}`;
+// The agent's own wallet — this address IS optimizer.fractionpay.eth (ENS, mainnet)
+// and ERC-8004 agent #6553 on Ethereum. x402 fees for each optimization settle here
+// (on Base Sepolia, where the x402 facilitator runs). One agent, one address.
+const AGENT_WALLET = "0x69C4b79F998e92267f116f12A3D9764ac77b8F30" as `0x${string}`;
 
 const handler = async (request: NextRequest): Promise<NextResponse> => {
   let body: { amountUsd?: number; positions?: Position[] };
@@ -37,7 +38,9 @@ const handler = async (request: NextRequest): Promise<NextResponse> => {
     const plan = planLiquidation(body.positions, amountUsd);
     return NextResponse.json({
       agent: "optimizer.fractionpay.eth",
-      erc8004AgentId: process.env.FRACTIONPAY_AGENT_ID ?? null,
+      agentWallet: AGENT_WALLET,
+      erc8004AgentId: process.env.FRACTIONPAY_AGENT_ID_ETH ?? "6553",
+      erc8004Chain: "ethereum-sepolia",
       plan,
       paidVia: "x402",
       pricing: { price: "$0.001", network: "base-sepolia" },

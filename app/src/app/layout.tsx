@@ -1,11 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { Navbar } from "@/components/Navbar";
+import { SmoothScroll } from "@/components/SmoothScroll";
+import { ScrollProgress } from "@/components/ScrollProgress";
+import { WebGLBackground } from "@/components/WebGLBackground";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const display = Space_Grotesk({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: "FractionPay — your portfolio is your payment method",
@@ -21,12 +29,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-dvh bg-slate-950 font-sans text-white antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${display.variable} grain min-h-dvh bg-[#05070a] font-sans text-white antialiased`}
       >
-        <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(60%_40%_at_50%_0%,rgba(16,185,129,0.12),transparent),radial-gradient(40%_30%_at_80%_20%,rgba(34,211,238,0.08),transparent)]" />
+        {/* WebGL shader field — behind everything */}
+        <WebGLBackground />
+
+        {/* layered atmosphere — fixed, behind everything */}
+        <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+          <div className="grid-lines absolute inset-0" />
+          <div className="aurora-blob absolute -top-40 left-[10%] h-[42rem] w-[42rem] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.22),transparent_65%)] blur-3xl" />
+          <div className="aurora-blob delay absolute top-[20%] right-[5%] h-[38rem] w-[38rem] rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.16),transparent_65%)] blur-3xl" />
+          <div className="aurora-blob absolute bottom-[-10%] left-[30%] h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.12),transparent_65%)] blur-3xl" />
+          <div className="absolute inset-0 bg-[#05070a]/40" />
+        </div>
+
+        <ScrollProgress />
+        <SmoothScroll />
         <Providers>
           <Navbar />
-          <main className="relative mx-auto max-w-5xl px-4 pb-24 pt-8">{children}</main>
+          <main className="relative z-10 mx-auto max-w-5xl px-4 pb-24 pt-24">{children}</main>
         </Providers>
       </body>
     </html>

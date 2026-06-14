@@ -22,6 +22,8 @@ export const marketAbi = parseAbi([
   "function invest(address token, uint256 usdcAmount) returns (uint256 shares)",
   "function list(address token, address feed, uint16 apyBps, string assetType, string name)",
   "function assetCount() view returns (uint256)",
+  "function assets(uint256) view returns (address)",
+  "function listings(address) view returns (address feed, uint16 apyBps, string assetType, string name, bool active)",
   "function treasury() view returns (address)",
   "event Invested(address indexed investor, address indexed token, uint256 usdcIn, uint256 shares)",
   "event Listed(address indexed token, string assetType, string name, address feed, uint16 apyBps)",
@@ -52,6 +54,7 @@ export const erc20Abi = parseAbi([
   "function name() view returns (string)",
   "function approve(address spender, uint256 amount) returns (bool)",
   "function allowance(address owner, address spender) view returns (uint256)",
+  "function transfer(address to, uint256 amount) returns (bool)",
   "function mint(address to, uint256 amount)",
 ]);
 
