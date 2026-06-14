@@ -47,7 +47,7 @@ export function AgentsLive() {
         <Database className="text-sky-300" size={20} />
         <div>
           <p className="font-semibold">Live reputation ranking — Google BigQuery</p>
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-[var(--fg)]/50">
             Runs a real query over Ethereum mainnet ERC-8004 data (appears in your Google Cloud
             console).
           </p>
@@ -55,7 +55,7 @@ export function AgentsLive() {
         <button
           onClick={run}
           disabled={busy}
-          className="ml-auto flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
+          className="ml-auto flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-400 to-[var(--sage)] px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
         >
           {busy ? (
             <Loader2 size={15} className="animate-spin" />
@@ -78,10 +78,10 @@ export function AgentsLive() {
             <Stat label="BigQuery job" value={data.jobId.slice(0, 14) + "…"} />
             <Stat label="Agents ranked" value={String(data.agents.length)} />
           </div>
-          <p className="mt-2 rounded-lg bg-white/5 px-3 py-2 text-[11px] leading-relaxed text-white/50">
+          <p className="mt-2 rounded-lg bg-[var(--fg)]/5 px-3 py-2 text-[11px] leading-relaxed text-[var(--fg)]/50">
             This is the <span className="text-sky-300">raw mainnet ranking</span> — pure ERC-8004 data, our
             agent isn&apos;t here because it has no mainnet feedback yet. The{" "}
-            <span className="text-emerald-300">marketplace leaderboard below</span> slots our agent in by score
+            <span className="text-[var(--citrus)]">marketplace leaderboard below</span> slots our agent in by score
             and re-ranks live as it earns feedback.
             {data.cacheHit && " (BigQuery served a cached result, so 0 bytes were billed this run.)"}
           </p>
@@ -94,14 +94,14 @@ export function AgentsLive() {
             {showSql ? "Hide" : "Show"} the SQL
           </button>
           {showSql && (
-            <pre className="mt-2 overflow-x-auto rounded-lg bg-black/40 p-3 text-[10px] leading-relaxed text-white/70">
+            <pre className="mt-2 overflow-x-auto rounded-lg bg-black/40 p-3 text-[10px] leading-relaxed text-[var(--fg)]/70">
               {data.sql}
             </pre>
           )}
 
-          <div className="mt-3 overflow-hidden rounded-xl border border-white/10">
+          <div className="mt-3 overflow-hidden rounded-xl border border-[var(--fg)]/10">
             <table className="w-full text-sm">
-              <thead className="bg-white/5 text-left text-xs uppercase text-white/40">
+              <thead className="bg-[var(--fg)]/5 text-left text-xs uppercase text-[var(--fg)]/40">
                 <tr>
                   <th className="px-3 py-2">#</th>
                   <th className="px-3 py-2">Agent</th>
@@ -112,8 +112,8 @@ export function AgentsLive() {
               </thead>
               <tbody>
                 {data.agents.slice(0, 8).map((a, i) => (
-                  <tr key={a.agentId} className="border-t border-white/5">
-                    <td className="px-3 py-2 text-white/40">{i + 1}</td>
+                  <tr key={a.agentId} className="border-t border-[var(--fg)]/5">
+                    <td className="px-3 py-2 text-[var(--fg)]/40">{i + 1}</td>
                     <td className="px-3 py-2 font-mono">#{a.agentId}</td>
                     <td className="px-3 py-2 text-right">{a.feedbackCount}</td>
                     <td className="px-3 py-2 text-right">{a.uniqueClients}</td>
@@ -123,7 +123,7 @@ export function AgentsLive() {
               </tbody>
             </table>
           </div>
-          <p className="mt-2 text-[11px] text-white/40">
+          <p className="mt-2 text-[11px] text-[var(--fg)]/40">
             Ran {new Date(data.ranAt).toLocaleString()} · source: bigquery-public-data.crypto_ethereum
           </p>
         </div>
@@ -134,9 +134,9 @@ export function AgentsLive() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-white/5 p-2">
-      <p className="text-white/40">{label}</p>
-      <p className="mt-0.5 truncate font-mono text-white/90">{value}</p>
+    <div className="rounded-lg bg-[var(--fg)]/5 p-2">
+      <p className="text-[var(--fg)]/40">{label}</p>
+      <p className="mt-0.5 truncate font-mono text-[var(--fg)]/90">{value}</p>
     </div>
   );
 }

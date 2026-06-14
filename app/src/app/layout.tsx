@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Space_Grotesk, Fraunces } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { Navbar } from "@/components/Navbar";
@@ -12,16 +12,10 @@ import { ChapterNav } from "@/components/ChapterNav";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-const display = Space_Grotesk({
+const display = Instrument_Serif({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-});
-// Fancy editorial serif for big headlines (Offerly-style display contrast).
-const serif = Fraunces({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "400",
   style: ["normal", "italic"],
 });
 
@@ -32,14 +26,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#020617",
+  themeColor: "#08080c",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${display.variable} ${serif.variable} grain min-h-dvh bg-[#05070a] font-sans text-white antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${display.variable} grain min-h-dvh bg-[var(--bg)] font-sans text-[var(--fg)] antialiased`}
       >
         <PreloaderWrapper>
           {/* WebGL shader field — behind everything */}
@@ -51,10 +45,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* layered atmosphere — fixed, behind everything */}
           <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
             <div className="grid-lines absolute inset-0" />
-            <div className="aurora-blob absolute -top-40 left-[10%] h-[42rem] w-[42rem] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.18),transparent_65%)] blur-3xl" />
-            <div className="aurora-blob delay absolute top-[20%] right-[5%] h-[38rem] w-[38rem] rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.12),transparent_65%)] blur-3xl" />
-            <div className="aurora-blob absolute bottom-[-10%] left-[30%] h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.09),transparent_65%)] blur-3xl" />
-            <div className="absolute inset-0 bg-[#05070a]/40" />
+            <div className="aurora-blob absolute -top-40 left-[10%] h-[48rem] w-[48rem] rounded-full opacity-[0.22] blur-[60px]" style={{ background: 'radial-gradient(circle, var(--citrus) 0%, transparent 65%)' }} />
+            <div className="aurora-blob delay absolute top-[20%] right-[5%] h-[44rem] w-[44rem] rounded-full opacity-[0.14] blur-[70px]" style={{ background: 'radial-gradient(circle, var(--sage) 0%, transparent 65%)' }} />
+            <div className="aurora-blob absolute bottom-[-10%] left-[30%] h-[40rem] w-[40rem] rounded-full opacity-[0.10] blur-[60px]" style={{ background: 'radial-gradient(circle, var(--gold) 0%, transparent 65%)' }} />
           </div>
 
           <ScrollProgress />

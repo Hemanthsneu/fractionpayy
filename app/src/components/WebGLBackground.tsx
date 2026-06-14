@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 /**
  * Lightweight WebGL shader background — a domain-warped flowing gradient in the
- * FractionPay emerald/cyan palette. ~1 draw call, runs on a full-screen triangle.
+ * FractionPay citrus/sage warm palette. ~1 draw call, runs on a full-screen triangle.
  * Falls back silently to the CSS aurora if WebGL is unavailable, and freezes for
  * users who prefer reduced motion.
  */
@@ -39,17 +39,17 @@ void main(){
                 fbm(p + 3.0*q + vec2(8.3, 2.8) - 0.12*t));
   float f = fbm(p + 2.5*r);
 
-  vec3 emerald = vec3(0.06, 0.72, 0.51);
-  vec3 cyan    = vec3(0.13, 0.83, 0.93);
-  vec3 deep    = vec3(0.02, 0.027, 0.04);
+  vec3 citrus  = vec3(0.78, 0.90, 0.29);
+  vec3 sage    = vec3(0.49, 0.68, 0.42);
+  vec3 deep    = vec3(0.031, 0.031, 0.047);
 
-  vec3 col = mix(deep, emerald, smoothstep(0.1, 0.9, f));
-  col = mix(col, cyan, smoothstep(0.55, 1.05, length(r)));
+  vec3 col = mix(deep, citrus, smoothstep(0.1, 0.9, f) * 0.35);
+  col = mix(col, sage, smoothstep(0.55, 1.05, length(r)) * 0.3);
   // vignette so center stays dark/legible
   float vig = smoothstep(1.25, 0.15, length(p));
-  col *= 0.55 + 0.45 * vig;
+  col *= 0.5 + 0.5 * vig;
   // overall subtle — content sits on top
-  col *= 0.42;
+  col *= 0.45;
   gl_FragColor = vec4(col, 1.0);
 }`;
 

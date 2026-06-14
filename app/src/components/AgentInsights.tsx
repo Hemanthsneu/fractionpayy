@@ -46,7 +46,7 @@ export function AgentInsights() {
         <BarChart3 className="text-indigo-300" size={20} />
         <div>
           <p className="font-semibold">Agent economy growth — Google BigQuery</p>
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-[var(--fg)]/50">
             ERC-8004 registrations per week from the mainnet Identity Registry (a second real query).
           </p>
         </div>
@@ -74,19 +74,19 @@ export function AgentInsights() {
           <div className="mt-4 flex h-32 items-end gap-1 rounded-xl bg-black/30 p-3">
             {data.weeks.map((w) => (
               <div key={w.week} className="group relative flex h-full flex-1 flex-col items-center justify-end" title={`${w.week}: ${w.count} registrations`}>
-                <span className="mb-0.5 text-[9px] text-white/40 opacity-0 transition group-hover:opacity-100">{w.count}</span>
+                <span className="mb-0.5 text-[9px] text-[var(--fg)]/40 opacity-0 transition group-hover:opacity-100">{w.count}</span>
                 <div className="w-full rounded-t bg-gradient-to-t from-indigo-500 to-violet-400" style={{ height: `${Math.max((w.count / max) * 100, 2)}%` }} />
               </div>
             ))}
           </div>
-          <p className="mt-1 text-center text-[10px] text-white/30">registrations per week · {data.weeks[0]?.week} → {data.weeks.at(-1)?.week}</p>
+          <p className="mt-1 text-center text-[10px] text-[var(--fg)]/30">registrations per week · {data.weeks[0]?.week} → {data.weeks.at(-1)?.week}</p>
 
           <button onClick={() => setShowSql((s) => !s)} className="mt-3 flex items-center gap-1 text-xs text-indigo-300 hover:underline">
             <ChevronDown size={13} className={showSql ? "rotate-180 transition" : "transition"} />
             {showSql ? "Hide" : "Show"} the SQL
           </button>
           {showSql && (
-            <pre className="mt-2 overflow-x-auto rounded-lg bg-black/40 p-3 text-[10px] leading-relaxed text-white/70">{data.sql}</pre>
+            <pre className="mt-2 overflow-x-auto rounded-lg bg-black/40 p-3 text-[10px] leading-relaxed text-[var(--fg)]/70">{data.sql}</pre>
           )}
         </div>
       )}
@@ -96,9 +96,9 @@ export function AgentInsights() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-white/5 p-2">
-      <p className="text-white/40">{label}</p>
-      <p className="mt-0.5 truncate font-mono text-white/90">{value}</p>
+    <div className="rounded-lg bg-[var(--fg)]/5 p-2">
+      <p className="text-[var(--fg)]/40">{label}</p>
+      <p className="mt-0.5 truncate font-mono text-[var(--fg)]/90">{value}</p>
     </div>
   );
 }

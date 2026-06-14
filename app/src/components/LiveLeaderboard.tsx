@@ -82,14 +82,14 @@ export function LiveLeaderboard() {
       <div className="mb-3 flex flex-wrap items-center gap-3">
         <h2 className="font-semibold">
           Reputation leaderboard{" "}
-          <span className="text-xs font-normal text-white/40">
+          <span className="text-xs font-normal text-[var(--fg)]/40">
             {isLive ? "· live BigQuery table" : "· cached snapshot"}
           </span>
         </h2>
         <button
           onClick={runAgent}
           disabled={busy}
-          className="ml-auto flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
+          className="ml-auto flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--citrus)] to-[var(--sage)] px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
         >
           {busy ? (
             <Loader2 size={15} className="animate-spin" />
@@ -103,12 +103,12 @@ export function LiveLeaderboard() {
       </div>
 
       {/* on-chain identity — always demonstrable */}
-      <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-white/40">
+      <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[var(--fg)]/40">
         <a
           href={addressUrl("ethereumSepolia", AGENT_WALLET)}
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-1 hover:text-cyan-300"
+          className="flex items-center gap-1 hover:text-[var(--sage)]"
         >
           ERC-8004 agent #{ETH_AGENT_ID} · {shortHash(AGENT_WALLET)} <ExternalLink size={11} />
         </a>
@@ -117,7 +117,7 @@ export function LiveLeaderboard() {
             href={txUrl("ethereumSepolia", lastTx)}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1 text-emerald-300 hover:underline"
+            className="flex items-center gap-1 text-[var(--citrus)] hover:underline"
           >
             latest feedback tx: {shortHash(lastTx)} <ExternalLink size={11} />
           </a>
@@ -125,10 +125,10 @@ export function LiveLeaderboard() {
       </div>
 
       {flash && (
-        <p className="mb-3 flex items-center gap-1.5 text-sm text-emerald-300">
+        <p className="mb-3 flex items-center gap-1.5 text-sm text-[var(--citrus)]">
           <ArrowUp size={14} /> {flash}
           {prevRank && ourRank >= 0 && ourRank + 1 < prevRank && (
-            <span className="text-white/60">
+            <span className="text-[var(--fg)]/60">
               {" "}
               — climbed #{prevRank} → #{ourRank + 1}
             </span>
@@ -136,9 +136,9 @@ export function LiveLeaderboard() {
         </p>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-white/10">
+      <div className="overflow-hidden rounded-2xl border border-[var(--fg)]/10">
         <table className="w-full text-sm">
-          <thead className="bg-white/5 text-left text-xs uppercase tracking-wide text-white/40">
+          <thead className="bg-[var(--fg)]/5 text-left text-xs uppercase tracking-wide text-[var(--fg)]/40">
             <tr>
               <th className="px-4 py-3">#</th>
               <th className="px-4 py-3">Agent</th>
@@ -158,14 +158,14 @@ export function LiveLeaderboard() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.4 }}
-                    className={`border-t border-white/5 ${
-                      a.isOurs ? "bg-emerald-400/10" : "hover:bg-white/5"
+                    className={`border-t border-[var(--fg)]/5 ${
+                      a.isOurs ? "bg-[var(--citrus)]/10" : "hover:bg-[var(--fg)]/5"
                     }`}
                   >
-                    <td className="px-4 py-3 text-white/40">{i + 1}</td>
+                    <td className="px-4 py-3 text-[var(--fg)]/40">{i + 1}</td>
                     <td className="px-4 py-3 font-mono">
                       {a.isOurs ? (
-                        <span className="font-semibold text-emerald-300">{a.name}</span>
+                        <span className="font-semibold text-[var(--citrus)]">{a.name}</span>
                       ) : (
                         a.name
                       )}
@@ -179,7 +179,7 @@ export function LiveLeaderboard() {
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-emerald-300">
+                    <td className="px-4 py-3 text-right font-semibold text-[var(--citrus)]">
                       {a.reputationScore.toLocaleString()}
                     </td>
                   </motion.tr>
@@ -189,7 +189,7 @@ export function LiveLeaderboard() {
           </tbody>
         </table>
       </div>
-      <p className="mt-3 text-xs text-white/30">
+      <p className="mt-3 text-xs text-[var(--fg)]/30">
         {isLive
           ? "Automatic: each agent run is scored on yield preserved → posted on Ethereum → fractionpay.reputation.leaderboard re-ranks. Good performance = a satisfied new client (diversity ↑), so rank tracks real performance."
           : "Cached mainnet snapshot · run /api/agents/setup to enable the live re-ranking table"}

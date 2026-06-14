@@ -184,15 +184,15 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
     <div className="mx-auto w-full max-w-md">
       <AnimatePresence mode="wait">
         {step === "amount" && (
-          <motion.div key="amount" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
-            <label className="text-sm text-white/60">Enter any amount (USD)</label>
-            <div className="mt-2 flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 focus-within:border-emerald-300/40">
-              <span className="text-3xl font-bold text-white/40">$</span>
+          <motion.div key="amount" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="rounded-2xl border border-[var(--fg)]/10 bg-[var(--fg)]/5 p-6 backdrop-blur">
+            <label className="text-sm text-[var(--fg)]/60">Enter any amount (USD)</label>
+            <div className="mt-2 flex items-center gap-2 rounded-xl border border-[var(--fg)]/10 bg-[var(--fg)]/5 px-3 focus-within:border-[var(--citrus)]/40">
+              <span className="text-3xl font-bold text-[var(--fg)]/40">$</span>
               <input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" placeholder="0.00" className="w-full bg-transparent py-2 text-4xl font-bold outline-none" />
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
               {["3", "6", "25", "100"].map((v) => (
-                <button key={v} onClick={() => setAmount(Number(v).toFixed(2))} className={`rounded-lg px-3 py-1 text-sm font-medium transition ${Number(amount) === Number(v) ? "bg-emerald-400 text-black" : "bg-white/5 text-white/60 hover:bg-white/10"}`}>
+                <button key={v} onClick={() => setAmount(Number(v).toFixed(2))} className={`rounded-lg px-3 py-1 text-sm font-medium transition ${Number(amount) === Number(v) ? "bg-[var(--citrus)] text-black" : "bg-[var(--fg)]/5 text-[var(--fg)]/60 hover:bg-[var(--fg)]/10"}`}>
                   ${v}
                 </button>
               ))}
@@ -200,17 +200,17 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
             {acceptsEurc && (
               <div className="mt-3 flex gap-2">
                 {(["USDC", "EURC"] as const).map((t) => (
-                  <button key={t} onClick={() => setPayToken(t)} className={`rounded-lg px-3 py-1 text-xs font-medium transition ${payToken === t ? "bg-emerald-400 text-black" : "bg-white/5 text-white/60"}`}>
+                  <button key={t} onClick={() => setPayToken(t)} className={`rounded-lg px-3 py-1 text-xs font-medium transition ${payToken === t ? "bg-[var(--citrus)] text-black" : "bg-[var(--fg)]/5 text-[var(--fg)]/60"}`}>
                     Pay in {t}
                   </button>
                 ))}
               </div>
             )}
-            <button onClick={hireAgent} disabled={!Number(amount)} className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 py-3 font-semibold text-black transition hover:opacity-90 disabled:opacity-40">
+            <button onClick={hireAgent} disabled={!Number(amount)} className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--citrus)] to-[var(--sage)] py-3 font-semibold text-black transition hover:opacity-90 disabled:opacity-40">
               <Bot size={18} /> Hire optimizer agent <ArrowRight size={16} />
             </button>
             {!isConnected && (
-              <p className="mt-3 text-center text-xs text-white/50">Connect a wallet (top right) to settle on-chain — plan preview works without one.</p>
+              <p className="mt-3 text-center text-xs text-[var(--fg)]/50">Connect a wallet (top right) to settle on-chain — plan preview works without one.</p>
             )}
             <WorldVerify />
             {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
@@ -218,32 +218,32 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
         )}
 
         {step === "hiring" && (
-          <motion.div key="hiring" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center backdrop-blur">
-            <Loader2 className="mx-auto animate-spin text-emerald-300" size={32} />
+          <motion.div key="hiring" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="rounded-2xl border border-[var(--fg)]/10 bg-[var(--fg)]/5 p-8 text-center backdrop-blur">
+            <Loader2 className="mx-auto animate-spin text-[var(--citrus)]" size={32} />
             <p className="mt-4 font-medium">Hiring optimizer.fractionpay.eth…</p>
-            <p className="mt-2 text-sm text-white/50">Paying $0.001 USDC via x402 · ERC-8004 agent #6553</p>
+            <p className="mt-2 text-sm text-[var(--fg)]/50">Paying $0.001 USDC via x402 · ERC-8004 agent #6553</p>
           </motion.div>
         )}
 
         {(step === "plan" || step === "approving" || step === "settling") && hire && (
-          <motion.div key="plan" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="rounded-2xl border border-emerald-300/20 bg-emerald-400/5 p-6 backdrop-blur">
-            <div className="flex items-center gap-2 text-emerald-300">
+          <motion.div key="plan" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="rounded-2xl border border-[var(--citrus)]/20 bg-[var(--citrus)]/5 p-6 backdrop-blur">
+            <div className="flex items-center gap-2 text-[var(--citrus)]">
               <Bot size={18} />
               <span className="text-sm font-semibold">Agent recommendation</span>
               {hire.x402.settlementTx && (
-                <a href={txUrl("baseSepolia", hire.x402.settlementTx)} target="_blank" rel="noreferrer" className="ml-auto flex items-center gap-1 rounded-full bg-emerald-400/10 px-2 py-0.5 text-[10px] uppercase tracking-wide hover:underline">
+                <a href={txUrl("baseSepolia", hire.x402.settlementTx)} target="_blank" rel="noreferrer" className="ml-auto flex items-center gap-1 rounded-full bg-[var(--citrus)]/10 px-2 py-0.5 text-[10px] uppercase tracking-wide hover:underline">
                   <Zap size={10} /> paid via x402
                 </a>
               )}
             </div>
             <p className="mt-3 text-2xl font-bold">Sell {hire.plan.sellPercentOfPosition.toFixed(4)}% of {hire.plan.symbol}</p>
-            <p className="mt-2 text-sm leading-relaxed text-white/70">{hire.plan.reason}</p>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--fg)]/70">{hire.plan.reason}</p>
 
-            <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-white/50">
-              <div className="rounded-lg bg-white/5 p-2">Sell amount<div className="mt-0.5 font-mono text-white/90">{hire.plan.sellAmount.toFixed(6)} {hire.plan.symbol}</div></div>
-              <div className="rounded-lg bg-white/5 p-2">Yield lost / yr<div className="mt-0.5 font-mono text-white/90">${hire.plan.annualYieldLostUsd.toFixed(2)}</div></div>
-              {quote && <div className="rounded-lg bg-white/5 p-2">Merchant receives<div className="mt-0.5 font-mono text-emerald-300">{quote.payOut.toFixed(2)} {payToken}</div></div>}
-              {quote && <div className="rounded-lg bg-white/5 p-2">Vault fee (to LPs)<div className="mt-0.5 font-mono text-white/90">${quote.feeUsd.toFixed(4)}</div></div>}
+            <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-[var(--fg)]/50">
+              <div className="rounded-lg bg-[var(--fg)]/5 p-2">Sell amount<div className="mt-0.5 font-mono text-[var(--fg)]/90">{hire.plan.sellAmount.toFixed(6)} {hire.plan.symbol}</div></div>
+              <div className="rounded-lg bg-[var(--fg)]/5 p-2">Yield lost / yr<div className="mt-0.5 font-mono text-[var(--fg)]/90">${hire.plan.annualYieldLostUsd.toFixed(2)}</div></div>
+              {quote && <div className="rounded-lg bg-[var(--fg)]/5 p-2">Merchant receives<div className="mt-0.5 font-mono text-[var(--citrus)]">{quote.payOut.toFixed(2)} {payToken}</div></div>}
+              {quote && <div className="rounded-lg bg-[var(--fg)]/5 p-2">Vault fee (to LPs)<div className="mt-0.5 font-mono text-[var(--fg)]/90">${quote.feeUsd.toFixed(4)}</div></div>}
             </div>
 
             {/* explicit on-chain settlement stepper */}
@@ -254,7 +254,7 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
               <StepRow done={false} active={step === "settling"} label={`Vault swaps ${hire.plan.symbol} → ${payToken} to merchant on Arc`} />
             </div>
 
-            <button onClick={confirmPayment} disabled={step === "approving" || step === "settling"} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 py-3 font-semibold text-black transition hover:opacity-90 disabled:opacity-60">
+            <button onClick={confirmPayment} disabled={step === "approving" || step === "settling"} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--citrus)] to-[var(--sage)] py-3 font-semibold text-black transition hover:opacity-90 disabled:opacity-60">
               {(step === "approving" || step === "settling") && <Loader2 size={16} className="animate-spin" />}
               {step === "approving" ? "Approve in wallet…" : step === "settling" ? "Settling on Arc…" : `Pay ${merchant.displayName} $${amount}`}
             </button>
@@ -264,8 +264,8 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
         )}
 
         {step === "done" && hire && (
-          <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="rounded-2xl border border-emerald-300/30 bg-emerald-400/10 p-6 backdrop-blur">
-            <div className="flex items-center gap-2 text-emerald-300">
+          <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="rounded-2xl border border-[var(--citrus)]/30 bg-[var(--citrus)]/10 p-6 backdrop-blur">
+            <div className="flex items-center gap-2 text-[var(--citrus)]">
               <CheckCircle2 size={22} /><span className="text-lg font-bold">Payment settled</span>
             </div>
             <div className="mt-4 space-y-2 text-sm">
@@ -276,11 +276,11 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
               <ReceiptRow label="Agent fee" value="$0.001 via x402 (Base Sepolia)" />
               <ReceiptRow label="Reputation" value={repInfo ? `scored ${repInfo.score}/100${repInfo.tx ? " (on Ethereum)" : ""} → #${repInfo.rank} on leaderboard` : "scoring agent → posting feedback…"} />
             </div>
-            <div className="mt-4 flex flex-col gap-1 text-xs text-white/40">
-              <a href={txUrl("arc", payTx)} target="_blank" rel="noreferrer" className="truncate font-mono hover:text-cyan-300">settlement: {shortHash(payTx)} ↗</a>
-              {hire.x402.settlementTx && <a href={txUrl("baseSepolia", hire.x402.settlementTx)} target="_blank" rel="noreferrer" className="truncate font-mono hover:text-cyan-300">x402: {shortHash(hire.x402.settlementTx)} ↗</a>}
+            <div className="mt-4 flex flex-col gap-1 text-xs text-[var(--fg)]/40">
+              <a href={txUrl("arc", payTx)} target="_blank" rel="noreferrer" className="truncate font-mono hover:text-[var(--sage)]">settlement: {shortHash(payTx)} ↗</a>
+              {hire.x402.settlementTx && <a href={txUrl("baseSepolia", hire.x402.settlementTx)} target="_blank" rel="noreferrer" className="truncate font-mono hover:text-[var(--sage)]">x402: {shortHash(hire.x402.settlementTx)} ↗</a>}
             </div>
-            <button onClick={reset} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 py-2.5 text-sm transition hover:bg-white/5">
+            <button onClick={reset} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--fg)]/15 py-2.5 text-sm transition hover:bg-[var(--fg)]/5">
               <Receipt size={14} /> New payment
             </button>
           </motion.div>
@@ -293,10 +293,10 @@ export function PaymentFlow({ merchant }: { merchant: Merchant }) {
 function StepRow({ done, active, label }: { done: boolean; active: boolean; label: string }) {
   return (
     <div className="flex items-center gap-2 text-xs">
-      <span className={`flex h-4 w-4 items-center justify-center rounded-full ${done ? "bg-emerald-400 text-black" : active ? "bg-cyan-400/30 text-cyan-200" : "bg-white/10 text-white/30"}`}>
+      <span className={`flex h-4 w-4 items-center justify-center rounded-full ${done ? "bg-[var(--citrus)] text-black" : active ? "bg-[var(--sage)]/30 text-[var(--sage)]" : "bg-[var(--fg)]/10 text-[var(--fg)]/30"}`}>
         {done ? <Check size={11} /> : active ? <Loader2 size={10} className="animate-spin" /> : <span className="h-1 w-1 rounded-full bg-current" />}
       </span>
-      <span className={done ? "text-white/80" : active ? "text-cyan-200" : "text-white/40"}>{label}</span>
+      <span className={done ? "text-[var(--fg)]/80" : active ? "text-[var(--sage)]" : "text-[var(--fg)]/40"}>{label}</span>
     </div>
   );
 }
@@ -304,7 +304,7 @@ function StepRow({ done, active, label }: { done: boolean; active: boolean; labe
 function ReceiptRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <span className="text-white/50">{label}</span>
+      <span className="text-[var(--fg)]/50">{label}</span>
       <span className="text-right font-medium">{value}</span>
     </div>
   );

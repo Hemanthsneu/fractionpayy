@@ -6,7 +6,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 const ease = [0.16, 1, 0.3, 1] as const;
 
 /**
- * Cinematic preloader inspired by hatom.com — logo morph, counter 0→100%,
+ * Cinematic preloader — logo morph, counter 0→100%,
  * gradient progress bar, and a clip-path wipe reveal.
  * Only shows once per session (sessionStorage flag).
  */
@@ -62,12 +62,13 @@ export function Preloader({ children }: { children: React.ReactNode }) {
             initial={{ clipPath: "inset(0 0 0 0)" }}
             exit={{ clipPath: "inset(0 0 100% 0)" }}
             transition={{ duration: 0.7, ease }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#020408]"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center"
+            style={{ background: 'var(--bg)' }}
           >
             {/* Ambient glow blobs */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              <div className="aurora-blob absolute -top-1/3 left-1/4 h-[40rem] w-[40rem] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.15),transparent_65%)] blur-3xl" />
-              <div className="aurora-blob delay absolute -bottom-1/4 right-1/3 h-[35rem] w-[35rem] rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.1),transparent_65%)] blur-3xl" />
+              <div className="aurora-blob absolute -top-1/3 left-1/4 h-[40rem] w-[40rem] rounded-full blur-3xl opacity-[0.18]" style={{ background: 'radial-gradient(circle, var(--citrus), transparent 65%)' }} />
+              <div className="aurora-blob delay absolute -bottom-1/4 right-1/3 h-[35rem] w-[35rem] rounded-full blur-3xl opacity-[0.10]" style={{ background: 'radial-gradient(circle, var(--sage), transparent 65%)' }} />
             </div>
 
             {/* Logo */}
@@ -77,9 +78,12 @@ export function Preloader({ children }: { children: React.ReactNode }) {
               transition={{ duration: 1, ease, delay: 0.1 }}
               className="relative mb-8"
             >
-              <span className="text-[4rem] font-bold text-emerald-300 drop-shadow-[0_0_40px_rgba(16,185,129,0.5)] sm:text-[5.5rem]">
-                ◢
-              </span>
+              <div className="relative w-16 h-16">
+                <div className="absolute inset-0 rounded-full" style={{ background: 'var(--citrus)' }} />
+                <div className="absolute inset-[4px] rounded-full flex items-center justify-center text-[var(--fg)] font-display italic text-2xl" style={{ background: 'var(--bg)' }}>
+                  F<span style={{ color: 'var(--citrus)' }}>p</span>
+                </div>
+              </div>
             </motion.div>
 
             {/* Brand name */}
@@ -89,10 +93,8 @@ export function Preloader({ children }: { children: React.ReactNode }) {
               transition={{ duration: 0.8, ease, delay: 0.4 }}
               className="mb-10 flex items-center gap-3"
             >
-              <span className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
-                <span className="bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">
-                  FractionPay
-                </span>
+              <span className="text-2xl font-medium tracking-tight sm:text-3xl text-[var(--fg)]">
+                Fraction<span className="font-display italic" style={{ color: 'var(--citrus)' }}>Pay</span>
               </span>
             </motion.div>
 
@@ -101,7 +103,7 @@ export function Preloader({ children }: { children: React.ReactNode }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="flex items-baseline gap-1 font-mono text-sm tracking-wider text-white/30"
+              className="flex items-baseline gap-1 font-mono text-sm tracking-wider text-[var(--fg)]/30"
             >
               <span ref={counterRef}>0</span>
               <span>%</span>
@@ -112,13 +114,15 @@ export function Preloader({ children }: { children: React.ReactNode }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="relative mt-4 h-[2px] w-48 overflow-hidden rounded-full bg-white/10"
+              className="relative mt-4 h-[2px] w-48 overflow-hidden rounded-full"
+              style={{ background: 'color-mix(in srgb, var(--fg) 10%, transparent)' }}
             >
               <motion.div
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 2.2, ease: [0.25, 0.1, 0.25, 1] }}
-                className="absolute inset-0 origin-left bg-gradient-to-r from-emerald-400 to-cyan-400"
+                className="absolute inset-0 origin-left"
+                style={{ background: 'linear-gradient(to right, var(--citrus), var(--gold))' }}
               />
             </motion.div>
 
@@ -144,12 +148,13 @@ function ParticleBurst() {
   const particles = Array.from({ length: 20 }, (_, i) => {
     const angle = (i / 20) * Math.PI * 2;
     const distance = 80 + Math.random() * 120;
+    const colors = ["var(--citrus)", "var(--sage)", "var(--gold)"];
     return {
       x: Math.cos(angle) * distance,
       y: Math.sin(angle) * distance,
       size: 2 + Math.random() * 4,
       delay: Math.random() * 0.2,
-      color: i % 2 === 0 ? "rgb(16, 185, 129)" : "rgb(34, 211, 238)",
+      color: colors[i % 3],
     };
   });
 
@@ -166,7 +171,6 @@ function ParticleBurst() {
             width: p.size,
             height: p.size,
             background: p.color,
-            boxShadow: `0 0 8px ${p.color}`,
           }}
         />
       ))}

@@ -13,9 +13,9 @@ interface Particle {
 }
 
 const COLORS = [
-  "rgba(16, 185, 129, ",  // emerald
-  "rgba(34, 211, 238, ",  // cyan
-  "rgba(45, 212, 191, ",  // teal
+  "rgba(200, 230, 74, ",   // citrus
+  "rgba(125, 174, 107, ",  // sage
+  "rgba(212, 168, 67, ",   // gold
 ];
 
 /**
@@ -79,7 +79,7 @@ export function ParticleField() {
           if (dist < CONNECTION_DIST) {
             const alpha = (1 - dist / CONNECTION_DIST) * 0.12;
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(16, 185, 129, ${alpha})`;
+            ctx.strokeStyle = `rgba(200, 230, 74, ${alpha})`;
             ctx.lineWidth = 0.5;
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
@@ -126,7 +126,7 @@ export function ParticleField() {
     <canvas
       ref={canvasRef}
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[1] opacity-60"
+      className="pointer-events-none fixed inset-0 z-[1] opacity-65"
     />
   );
 }

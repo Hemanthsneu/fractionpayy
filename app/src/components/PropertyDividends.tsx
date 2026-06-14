@@ -108,14 +108,14 @@ export function PropertyDividends({ initial }: { initial: PropertyState }) {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-[var(--fg)]/10 bg-[var(--fg)]/5 p-6 backdrop-blur">
         <div className="flex items-center gap-3">
           <span className="text-4xl">🏢</span>
           <div>
             <h1 className="text-2xl font-bold">{state.name}</h1>
-            <p className="text-sm text-white/50">{state.location}</p>
+            <p className="text-sm text-[var(--fg)]/50">{state.location}</p>
           </div>
-          <span className="ml-auto flex items-center gap-1 rounded-full bg-emerald-400/10 px-3 py-1 text-sm text-emerald-300">
+          <span className="ml-auto flex items-center gap-1 rounded-full bg-[var(--citrus)]/10 px-3 py-1 text-sm text-[var(--citrus)]">
             <TrendingUp size={14} /> {state.annualYieldPct}% rent yield
           </span>
         </div>
@@ -128,26 +128,26 @@ export function PropertyDividends({ initial }: { initial: PropertyState }) {
         </div>
 
         {address && state.yourShares < 0.0001 && (
-          <div className="mt-4 rounded-xl border border-emerald-300/30 bg-emerald-400/5 p-3 text-sm text-white/70">
+          <div className="mt-4 rounded-xl border border-[var(--citrus)]/30 bg-[var(--citrus)]/5 p-3 text-sm text-[var(--fg)]/70">
             You don&apos;t hold shares of this property yet. Fund your wallet to receive starter shares, then claim dividends.
             <div className="mt-2"><FundWallet compact onFunded={() => setTimeout(refresh, 1500)} /></div>
           </div>
         )}
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          <button onClick={distribute} disabled={busy !== ""} className="flex items-center justify-center gap-2 rounded-xl border border-white/15 py-3 text-sm font-medium transition hover:bg-white/5 disabled:opacity-40">
+          <button onClick={distribute} disabled={busy !== ""} className="flex items-center justify-center gap-2 rounded-xl border border-[var(--fg)]/15 py-3 text-sm font-medium transition hover:bg-[var(--fg)]/5 disabled:opacity-40">
             {busy === "distribute" ? <Loader2 size={16} className="animate-spin" /> : <Building2 size={16} />}
             Distribute quarterly rent (issuer)
           </button>
-          <button onClick={claim} disabled={busy !== "" || state.claimableUsd < 0.01} className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 py-3 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-40">
+          <button onClick={claim} disabled={busy !== "" || state.claimableUsd < 0.01} className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--citrus)] to-[var(--sage)] py-3 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-40">
             {busy === "claim" ? <Loader2 size={16} className="animate-spin" /> : <Coins size={16} />}
             Claim ${state.claimableUsd.toFixed(2)} dividends
           </button>
         </div>
 
-        {statusStep && <p className="mt-3 text-center text-xs text-cyan-300">{statusStep}</p>}
+        {statusStep && <p className="mt-3 text-center text-xs text-[var(--sage)]">{statusStep}</p>}
         {flash && (
-          <p className="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm text-emerald-300">
+          <p className="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm text-[var(--citrus)]">
             <CheckCircle2 size={15} /> {flash.msg}
             <a href={txUrl("arc", flash.tx)} target="_blank" rel="noreferrer" className="flex items-center gap-1 underline">{shortHash(flash.tx)} <ExternalLink size={11} /></a>
           </p>
@@ -155,7 +155,7 @@ export function PropertyDividends({ initial }: { initial: PropertyState }) {
         {error && <p className="mt-4 text-center text-sm text-red-400">{error}</p>}
       </motion.div>
 
-      <p className="mt-4 text-center text-xs text-white/40">
+      <p className="mt-4 text-center text-xs text-[var(--fg)]/40">
         Tokenized on Arc · dividends paid in USDC · pro-rata to every shareholder · the same shares are spendable via the FractionPay vault.
       </p>
     </div>
@@ -164,10 +164,10 @@ export function PropertyDividends({ initial }: { initial: PropertyState }) {
 
 function Stat({ label, value, sub, highlight }: { label: string; value: string; sub?: string; highlight?: boolean }) {
   return (
-    <div className={`rounded-xl p-3 ${highlight ? "bg-emerald-400/10" : "bg-white/5"}`}>
-      <p className="text-xs text-white/50">{label}</p>
-      <p className={`mt-1 text-lg font-bold ${highlight ? "text-emerald-300" : ""}`}>{value}</p>
-      {sub && <p className="text-[11px] text-white/40">{sub}</p>}
+    <div className={`rounded-xl p-3 ${highlight ? "bg-[var(--citrus)]/10" : "bg-[var(--fg)]/5"}`}>
+      <p className="text-xs text-[var(--fg)]/50">{label}</p>
+      <p className={`mt-1 text-lg font-bold ${highlight ? "text-[var(--citrus)]" : ""}`}>{value}</p>
+      {sub && <p className="text-[11px] text-[var(--fg)]/40">{sub}</p>}
     </div>
   );
 }

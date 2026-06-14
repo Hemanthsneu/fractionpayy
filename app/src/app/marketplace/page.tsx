@@ -18,13 +18,13 @@ export default async function MarketplacePage() {
   return (
     <div>
       <header className="mb-8">
-        <p className="text-sm uppercase tracking-widest text-emerald-300/80">Primary market</p>
+        <p className="text-sm uppercase tracking-widest text-[var(--citrus)]/80">Primary market</p>
         <h1 className="mt-1 text-3xl font-bold tracking-tight">Invest in tokenized RWAs</h1>
-        <p className="mt-2 max-w-2xl text-white/50">
+        <p className="mt-2 max-w-2xl text-[var(--fg)]/50">
           Buy fractional shares of real-world assets with USDC — real estate, treasuries, bonds,
           funds, commodities. Shares land in your portfolio, earn yield, and stay spendable
           anywhere via FractionPay.{" "}
-          <Link href="/admin" className="text-cyan-300 hover:underline">
+          <Link href="/admin" className="text-[var(--sage)] hover:underline">
             Issuer? Tokenize an asset →
           </Link>
         </p>

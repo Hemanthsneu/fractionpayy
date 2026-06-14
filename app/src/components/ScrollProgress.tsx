@@ -9,8 +9,8 @@ export function ScrollProgress() {
 
   return (
     <motion.div
-      style={{ scaleX }}
-      className="fixed left-0 right-0 top-0 z-[60] h-[2px] origin-left bg-gradient-to-r from-emerald-400 via-cyan-300 to-emerald-400"
+      style={{ scaleX, background: 'linear-gradient(to right, var(--citrus), var(--gold), var(--sage))' }}
+      className="fixed left-0 right-0 top-0 z-[60] h-[2px] origin-left"
     />
   );
 }

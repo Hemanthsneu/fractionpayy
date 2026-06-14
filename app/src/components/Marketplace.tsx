@@ -66,14 +66,14 @@ export function Marketplace({ assets }: { assets: Asset[] }) {
   return (
     <div>
       {isConnected && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl bg-white/5 px-4 py-2.5 text-sm text-white/60">
+        <div className="mb-4 flex items-center gap-3 rounded-xl bg-[var(--fg)]/5 px-4 py-2.5 text-sm text-[var(--fg)]/60">
           <span>New here? Top up your Arc wallet first:</span>
           <FundWallet compact />
         </div>
       )}
 
       {flash && (
-        <p className="mb-4 flex flex-wrap items-center gap-2 rounded-xl bg-emerald-400/10 px-4 py-2 text-sm text-emerald-300">
+        <p className="mb-4 flex flex-wrap items-center gap-2 rounded-xl bg-[var(--citrus)]/10 px-4 py-2 text-sm text-[var(--citrus)]">
           <CheckCircle2 size={15} /> {flash.msg}
           <a href={txUrl("arc", flash.tx)} target="_blank" rel="noreferrer" className="flex items-center gap-1 underline">
             {shortHash(flash.tx)} <ExternalLink size={11} />
@@ -88,19 +88,19 @@ export function Marketplace({ assets }: { assets: Asset[] }) {
             key={a.token}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur"
+            className="flex flex-col rounded-2xl border border-[var(--fg)]/10 bg-[var(--fg)]/5 p-5 backdrop-blur"
           >
             <div className="flex items-center justify-between">
               <span className="text-3xl">{a.emoji}</span>
-              <span className="rounded-full bg-white/5 px-2 py-1 text-[10px] uppercase tracking-wide text-white/50">
+              <span className="rounded-full bg-[var(--fg)]/5 px-2 py-1 text-[10px] uppercase tracking-wide text-[var(--fg)]/50">
                 {TYPE_LABEL[a.assetType] ?? a.assetType}
               </span>
             </div>
             <p className="mt-3 font-semibold">{a.name}</p>
-            <div className="mt-1 flex items-center gap-2 text-xs text-white/50">
+            <div className="mt-1 flex items-center gap-2 text-xs text-[var(--fg)]/50">
               <span className="font-mono">${a.pricePerShareUsd.toLocaleString()}/share</span>
               {a.yieldPct > 0 && (
-                <span className="flex items-center gap-0.5 text-emerald-300">
+                <span className="flex items-center gap-0.5 text-[var(--citrus)]">
                   <TrendingUp size={11} /> {a.yieldPct}% APY
                 </span>
               )}
@@ -109,15 +109,15 @@ export function Marketplace({ assets }: { assets: Asset[] }) {
               href={addressUrl("arc", a.token)}
               target="_blank"
               rel="noreferrer"
-              className="mt-1.5 flex items-center gap-1 font-mono text-[11px] text-white/35 transition hover:text-cyan-300"
+              className="mt-1.5 flex items-center gap-1 font-mono text-[11px] text-[var(--fg)]/35 transition hover:text-[var(--sage)]"
               title="View token contract on Arc explorer"
             >
               {shortHash(a.token)} <ExternalLink size={10} />
             </a>
 
             <div className="mt-4 flex items-center gap-2">
-              <div className="flex items-center rounded-lg bg-white/5 px-2">
-                <span className="text-white/40">$</span>
+              <div className="flex items-center rounded-lg bg-[var(--fg)]/5 px-2">
+                <span className="text-[var(--fg)]/40">$</span>
                 <input
                   value={amount[a.token] ?? "1000"}
                   onChange={(e) => setAmount((m) => ({ ...m, [a.token]: e.target.value }))}
@@ -128,14 +128,14 @@ export function Marketplace({ assets }: { assets: Asset[] }) {
               <button
                 onClick={() => invest(a)}
                 disabled={busy !== ""}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-400 to-cyan-400 py-2 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-40"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-[var(--citrus)] to-[var(--sage)] py-2 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-40"
               >
                 {busy === a.token ? <Loader2 size={14} className="animate-spin" /> : null}
                 Invest
               </button>
             </div>
             {busy === a.token && statusStep && (
-              <p className="mt-2 text-center text-[11px] text-cyan-300">{statusStep}</p>
+              <p className="mt-2 text-center text-[11px] text-[var(--sage)]">{statusStep}</p>
             )}
           </motion.div>
         ))}

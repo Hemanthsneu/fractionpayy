@@ -40,22 +40,22 @@ export function FundWallet({ onFunded, compact }: { onFunded?: () => void; compa
 
   if (done && compact) {
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600">
+      <span className="inline-flex items-center gap-1.5 text-xs text-[var(--sage)]">
         <CheckCircle2 size={14} /> Wallet funded on Arc
       </span>
     );
   }
 
   return (
-    <div className={compact ? "" : "rounded-2xl border border-emerald-300/30 bg-emerald-400/10 p-5"}>
+    <div className={compact ? "" : "rounded-2xl border border-[var(--citrus)]/30 bg-[var(--citrus)]/10 p-5"}>
       {!compact && (
-        <div className="mb-3 flex items-center gap-2 text-emerald-300">
+        <div className="mb-3 flex items-center gap-2 text-[var(--citrus)]">
           <Droplets size={18} />
           <span className="font-semibold">Fund your wallet on Arc</span>
         </div>
       )}
       {!compact && (
-        <p className="mb-4 text-sm text-white/60">
+        <p className="mb-4 text-sm text-[var(--fg)]/60">
           Arc uses USDC as its gas token. Tap below to receive native gas, 50,000 test USDC, and a
           starter basket of tokenized assets — then you sign every transaction yourself.
         </p>
@@ -63,7 +63,7 @@ export function FundWallet({ onFunded, compact }: { onFunded?: () => void; compa
       <button
         onClick={fund}
         disabled={busy || done}
-        className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2.5 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
+        className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--citrus)] to-[var(--sage)] px-5 py-2.5 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
       >
         {busy ? <Loader2 size={16} className="animate-spin" /> : done ? <CheckCircle2 size={16} /> : <Coins size={16} />}
         {busy ? "Funding on Arc…" : done ? "Funded ✓" : "Fund my wallet (test USDC + RWAs)"}

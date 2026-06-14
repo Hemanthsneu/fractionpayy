@@ -30,23 +30,23 @@ function GateCard({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="mx-auto mt-10 max-w-md rounded-3xl border border-white/10 bg-white/[0.04] p-10 text-center backdrop-blur-xl"
+      className="mx-auto mt-10 max-w-md rounded-3xl border border-[var(--fg)]/10 bg-[var(--fg)]/[0.04] p-10 text-center backdrop-blur-xl"
     >
       <span
         className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl ${
           tone === "amber"
             ? "bg-amber-400/10 text-amber-300"
-            : "bg-emerald-400/10 text-emerald-300"
+            : "bg-[var(--citrus)]/10 text-[var(--citrus)]"
         }`}
       >
         {icon}
       </span>
       <h2 className="mt-5 font-display text-2xl font-semibold">{title}</h2>
-      <p className="mt-2 text-sm leading-relaxed text-white/55">{subtitle}</p>
+      <p className="mt-2 text-sm leading-relaxed text-[var(--fg)]/55">{subtitle}</p>
       {cta && onClick && (
         <button
           onClick={onClick}
-          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 px-6 py-3 font-semibold text-black transition hover:opacity-90"
+          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--citrus)] to-[var(--sage)] px-6 py-3 font-semibold text-black transition hover:opacity-90"
         >
           <Wallet size={16} /> {cta}
         </button>
@@ -58,7 +58,7 @@ function GateCard({
 function Loading() {
   return (
     <div className="mt-16 flex justify-center">
-      <Loader2 className="animate-spin text-emerald-300" size={28} />
+      <Loader2 className="animate-spin text-[var(--citrus)]" size={28} />
     </div>
   );
 }

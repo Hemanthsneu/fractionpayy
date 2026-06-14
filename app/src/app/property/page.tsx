@@ -18,13 +18,13 @@ export default async function PropertyPage() {
   return (
     <div>
       <header className="mb-8">
-        <p className="text-sm uppercase tracking-widest text-emerald-300/80">
+        <p className="text-sm uppercase tracking-widest text-[var(--citrus)]/80">
           Tokenize → Earn → Spend
         </p>
         <h1 className="mt-1 text-3xl font-bold tracking-tight">Tokenized real estate</h1>
-        <p className="mt-2 max-w-2xl text-white/50">
+        <p className="mt-2 max-w-2xl text-[var(--fg)]/50">
           A commercial property, tokenized into fractional shares and distributed to investors.
-          Rental income is paid as <span className="text-emerald-300">stablecoin dividends</span>{" "}
+          Rental income is paid as <span className="text-[var(--citrus)]">stablecoin dividends</span>{" "}
           pro-rata on Arc — and the same shares are spendable through the FractionPay vault.
         </p>
       </header>

@@ -78,7 +78,7 @@ export function ChapterNav() {
       {CHAPTERS.map((ch, i) => (
         <div key={ch.id} className="group relative flex items-center">
           {/* Tooltip */}
-          <span className="pointer-events-none absolute right-6 whitespace-nowrap rounded-lg bg-[#0a1612]/90 px-3 py-1.5 text-xs font-medium text-white/80 opacity-0 backdrop-blur-md transition-all duration-300 group-hover:opacity-100 group-hover:-translate-x-1">
+          <span className="pointer-events-none absolute right-6 whitespace-nowrap rounded-lg border border-[var(--fg)]/[0.08] bg-[var(--bg)]/90 px-3 py-1.5 text-xs font-medium text-[var(--fg)]/80 opacity-0 backdrop-blur-md transition-all duration-300 group-hover:opacity-100 group-hover:-translate-x-1" style={{ boxShadow: '0 4px 20px -4px var(--c-shadow-strong)' }}>
             {ch.label}
           </span>
           {/* Dot */}

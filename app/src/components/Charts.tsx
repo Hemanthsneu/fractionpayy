@@ -55,8 +55,8 @@ export function DonutChart({ segments, size = 200, thickness = 22, centerLabel, 
       </svg>
       {(centerLabel || centerSub) && (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          {centerSub && <span className="text-[10px] uppercase tracking-wider text-white/40">{centerSub}</span>}
-          {centerLabel && <span className="font-display text-xl font-bold text-white">{centerLabel}</span>}
+          {centerSub && <span className="text-[10px] uppercase tracking-wider text-[var(--fg)]/40">{centerSub}</span>}
+          {centerLabel && <span className="font-display text-xl font-bold text-[var(--fg)]">{centerLabel}</span>}
         </div>
       )}
     </div>

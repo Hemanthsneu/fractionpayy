@@ -32,7 +32,7 @@ export function WorldVerify() {
 
   if (status === "done") {
     return (
-      <div className="mt-3 flex items-center justify-center gap-1.5 rounded-lg bg-emerald-400/10 py-2 text-xs text-emerald-300">
+      <div className="mt-3 flex items-center justify-center gap-1.5 rounded-lg bg-[var(--citrus)]/10 py-2 text-xs text-[var(--citrus)]">
         <CheckCircle2 size={14} /> Verified human · World ID
       </div>
     );
@@ -52,7 +52,7 @@ export function WorldVerify() {
       <button
         onClick={() => setOpen(true)}
         disabled={status === "verifying"}
-        className="mt-3 flex w-full items-center justify-center gap-1.5 text-xs text-white/50 transition hover:text-white/80 disabled:opacity-50"
+        className="mt-3 flex w-full items-center justify-center gap-1.5 text-xs text-[var(--fg)]/50 transition hover:text-[var(--fg)]/80 disabled:opacity-50"
       >
         {status === "verifying" ? (
           <Loader2 size={13} className="animate-spin" />
