@@ -66,6 +66,12 @@ export function FundWallet({ onFunded, compact }: { onFunded?: () => void; compa
     return (
       <span className="inline-flex items-center gap-1.5 text-xs text-[var(--sage)]">
         <CheckCircle2 size={14} /> Wallet funded on Arc
+        <button
+          onClick={() => { setDone(false); if (address) sessionStorage.removeItem(FUNDED_KEY(address)); }}
+          className="ml-1 underline opacity-60 hover:opacity-100 transition"
+        >
+          Top up again
+        </button>
       </span>
     );
   }
