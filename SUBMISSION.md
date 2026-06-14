@@ -78,7 +78,7 @@ action — invest, pay, distribute, claim, tokenize — is signed by the user's 
 
 Oracle safety hardened after an adversarial audit (per-feed try/catch isolation so one stale
 feed can't freeze the vault; round-completeness + staleness checks; admin feed deactivation).
-**35 Foundry tests pass.**
+**42 Foundry tests across the suite (passing locally).**
 
 **Evidence (Arc, chain 5042002 — all verifiable on `testnet.arcscan.app`):**
 Vault `0x3FbE9FA34858Af481625849144fA14726E25670f` ·
