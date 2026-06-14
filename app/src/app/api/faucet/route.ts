@@ -97,32 +97,51 @@ export async function POST(request: NextRequest) {
       nonce++;
     }
 
-    // 4. property shares — MINT via issueShares so the wallet earns dividends.
-    // Uses the on-chain issueShares function (no treasury balance required).
-    // NON-FATAL: if the contract reverts (e.g. caller not authorized), skip it.
-    try {
-      const propTx = await wallet.writeContract({
-        address: dep.property,
-        abi: [{
-          type: "function",
-          name: "issueShares",
-          inputs: [
-            { name: "investor", type: "address" },
-            { name: "shares", type: "uint256" },
-          ],
-          outputs: [],
-          stateMutability: "nonpayable",
-        }],
-        functionName: "issueShares",
-        args: [to, PROPERTY_GRANT],
-        nonce,
-      });
-      txs.property = propTx;
-      hashes.push(propTx);
-      nonce++;
-    } catch {
-      // issueShares failed (not authorized, or contract doesn't support it).
-      // Fall back to transfer from treasury if possible.
+    // 4. property shares — try multiple strategies to get shares to the wallet.
+    // NON-FATAL: if all fail, skip. The core invest/pay demo doesn't need property.
+    let propGranted = false;
+
+    // Strategy A: issueShares (owner-only mint on PropertyToken)
+    if (!propGranted) {
+      try {
+        const propTx = await wallet.writeContract({
+          address: dep.property,
+          abi: [{
+            type: "function",
+            name: "issueShares",
+            inputs: [
+              { name: "investor", type: "address" },
+              { name: "shares", type: "uint256" },
+            ],
+            outputs: [],
+            stateMutability: "nonpayable",
+          }],
+          functionName: "issueShares",
+          args: [to, PROPERTY_GRANT],
+          nonce,
+        });
+        txs.property = propTx;
+        hashes.push(propTx);
+        nonce++;
+        propGranted = true;
+      } catch { /* issueShares not authorized or reverted */ }
+    }
+
+    // Strategy B: public mint (same as other testnet tokens)
+    if (!propGranted) {
+      try {
+        const propTx = await wallet.writeContract({
+          address: dep.property, abi: erc20Abi, functionName: "mint", args: [to, PROPERTY_GRANT], nonce,
+        });
+        txs.property = propTx;
+        hashes.push(propTx);
+        nonce++;
+        propGranted = true;
+      } catch { /* mint not available on this contract */ }
+    }
+
+    // Strategy C: transfer from treasury balance
+    if (!propGranted) {
       try {
         const propBal = (await pub.readContract({ address: dep.property, abi: erc20Abi, functionName: "balanceOf", args: [account.address] })) as bigint;
         if (propBal >= PROPERTY_GRANT) {
@@ -130,10 +149,9 @@ export async function POST(request: NextRequest) {
           txs.property = propTx;
           hashes.push(propTx);
           nonce++;
+          propGranted = true;
         }
-      } catch {
-        /* treasury out of property shares — non-fatal */
-      }
+      } catch { /* treasury out of property shares */ }
     }
 
     // confirm everything before responding so balances are queryable immediately.
@@ -146,7 +164,7 @@ export async function POST(request: NextRequest) {
         nativeGasUsdc: Number(formatEther(GAS_TOPUP)),
         usdc: 50000,
         rwaBasket: Object.keys(RWA_GRANT),
-        propertyShares: txs.property ? 10 : 0,
+        propertyShares: propGranted ? 10 : 0,
       },
       txs,
     });
