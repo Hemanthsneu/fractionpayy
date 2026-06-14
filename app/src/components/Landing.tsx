@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   motion,
   useScroll,
@@ -24,15 +25,18 @@ import {
   TrendingUp,
   ChevronDown,
   Cpu,
+  Zap,
+  Globe,
+  Lock,
 } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-/* ───────────────────────── motion primitives ───────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   MOTION PRIMITIVES
+   ═══════════════════════════════════════════════════════════ */
 
 function FullBleed({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  // Escapes the centered max-w container to span the full viewport width.
-  // Uses margin math (not transform) so position:sticky descendants keep working.
   return (
     <div className={`relative w-screen ml-[calc(50%-50vw)] ${className}`}>{children}</div>
   );
@@ -61,8 +65,35 @@ function WordReveal({
           >
             {w}
           </motion.span>
-          {i < words.length - 1 ? " " : ""}
+          {i < words.length - 1 ? " " : ""}
         </span>
+      ))}
+    </span>
+  );
+}
+
+function CharReveal({
+  text,
+  className = "",
+  delay = 0,
+}: {
+  text: string;
+  className?: string;
+  delay?: number;
+}) {
+  return (
+    <span className={className}>
+      {text.split("").map((ch, i) => (
+        <motion.span
+          key={i}
+          className="inline-block"
+          initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
+          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, ease, delay: delay + i * 0.025 }}
+        >
+          {ch === " " ? "\u00A0" : ch}
+        </motion.span>
       ))}
     </span>
   );
@@ -71,11 +102,13 @@ function WordReveal({
 function Reveal({
   children,
   delay = 0,
-  y = 26,
+  y = 30,
+  className = "",
 }: {
   children: React.ReactNode;
   delay?: number;
   y?: number;
+  className?: string;
 }) {
   return (
     <motion.div
@@ -83,6 +116,7 @@ function Reveal({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-70px" }}
       transition={{ duration: 0.8, ease, delay }}
+      className={className}
     >
       {children}
     </motion.div>
@@ -100,7 +134,6 @@ function Counter({
   suffix?: string;
   decimals?: number;
 }) {
-  const ref = useRef<HTMLSpanElement>(null);
   const mv = useMotionValue(0);
   const [text, setText] = useState(`${prefix}0${suffix}`);
 
@@ -117,7 +150,6 @@ function Counter({
 
   return (
     <motion.span
-      ref={ref}
       onViewportEnter={() => {
         const controls = animate(mv, to, { duration: 1.6, ease });
         return () => controls.stop();
@@ -155,7 +187,9 @@ function Magnetic({ children, className = "" }: { children: React.ReactNode; cla
   );
 }
 
-/* ───────────────────────── hero card (3D tilt + float) ───────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   HERO CARD (3D tilt + float)
+   ═══════════════════════════════════════════════════════════ */
 
 function HeroCard() {
   const ref = useRef<HTMLDivElement>(null);
@@ -241,26 +275,28 @@ function HeroCard() {
   );
 }
 
-/* ───────────────────────── the pinned "one flow" ───────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   CHAPTER 3 — PINNED "ONE FLOW" (enhanced with horizontal panels)
+   ═══════════════════════════════════════════════════════════ */
 
-const ACTS = [
+const FLOW_STEPS = [
   {
     n: "01",
-    icon: <Building2 size={18} />,
+    icon: <Building2 size={20} />,
     kicker: "Tokenize & invest",
     title: "A $10M tower becomes 10M shares.",
     body: "An issuer tokenizes commercial real estate, T-bills, bonds and funds. You buy in with USDC and build a portfolio of real-world assets — from $5 up.",
   },
   {
     n: "02",
-    icon: <Coins size={18} />,
+    icon: <Coins size={20} />,
     kicker: "Earn dividends",
     title: "Rent and yield pay you, on-chain.",
     body: "Income is distributed to holders as USDC dividends, pro-rata, automatically. Your assets keep working the entire time you hold them.",
   },
   {
     n: "03",
-    icon: <Nfc size={18} />,
+    icon: <Nfc size={20} />,
     kicker: "Tap to spend",
     title: "Buy coffee with a slice of a skyscraper.",
     body: "Tap an ENS-named merchant. An AI agent picks the least-disruptive slice to liquidate and settles in USDC on Arc — your money earns until the second you spend it.",
@@ -275,7 +311,6 @@ function PinnedFlow() {
     setActive(v < 0.34 ? 0 : v < 0.67 ? 1 : 2);
   });
 
-  // per-act opacity windows
   const o0 = useTransform(scrollYProgress, [0, 0.04, 0.28, 0.36], [1, 1, 1, 0]);
   const o1 = useTransform(scrollYProgress, [0.3, 0.38, 0.62, 0.7], [0, 1, 1, 0]);
   const o2 = useTransform(scrollYProgress, [0.64, 0.72, 1, 1], [0, 1, 1, 1]);
@@ -295,35 +330,35 @@ function PinnedFlow() {
               One complete flow
             </p>
             <div className="mt-7 space-y-6">
-              {ACTS.map((a, i) => (
+              {FLOW_STEPS.map((a, i) => (
                 <div
                   key={a.n}
                   className="flex gap-4 transition-all duration-500"
-                  style={{ opacity: active === i ? 1 : 0.32 }}
+                  style={{ opacity: active === i ? 1 : 0.25 }}
                 >
                   <div className="relative flex flex-col items-center">
                     <span
-                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-all duration-500 ${
+                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition-all duration-500 ${
                         active === i
-                          ? "border-emerald-300/50 bg-emerald-400/15 text-emerald-300"
+                          ? "border-emerald-300/50 bg-emerald-400/15 text-emerald-300 shadow-[0_0_20px_-4px_rgba(16,185,129,0.4)]"
                           : "border-white/10 bg-white/5 text-white/40"
                       }`}
                     >
                       {a.icon}
                     </span>
-                    {i < ACTS.length - 1 && (
-                      <span className="mt-1 h-12 w-px bg-gradient-to-b from-white/15 to-transparent" />
+                    {i < FLOW_STEPS.length - 1 && (
+                      <span className="mt-1 h-14 w-px bg-gradient-to-b from-white/15 to-transparent" />
                     )}
                   </div>
-                  <div className="pt-1">
-                    <p className="font-mono text-[11px] text-white/30">{a.n}</p>
+                  <div className="pt-1.5">
+                    <p className="font-mono text-[11px] text-white/25">{a.n}</p>
                     <h3 className="font-display text-xl font-semibold sm:text-2xl">{a.kicker}</h3>
                     {active === i && (
                       <motion.p
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, ease }}
-                        className="mt-2 max-w-md text-sm leading-relaxed text-white/55"
+                        className="mt-2 max-w-md text-sm leading-relaxed text-white/50"
                       >
                         {a.body}
                       </motion.p>
@@ -336,7 +371,7 @@ function PinnedFlow() {
 
           {/* right: stacked cross-fading visuals */}
           <div className="relative h-[300px] sm:h-[440px]">
-            {ACTS.map((a, i) => (
+            {FLOW_STEPS.map((a, i) => (
               <motion.div
                 key={a.n}
                 style={{ opacity: opacities[i] as MotionValue<number>, y: ys[i] as MotionValue<number> }}
@@ -354,7 +389,7 @@ function PinnedFlow() {
 
 function FlowVisual({ index, title }: { index: number; title: string }) {
   return (
-    <div className="flex h-full flex-col justify-center rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl sm:p-8">
+    <div className="glass-card flex h-full flex-col justify-center p-6 sm:p-8">
       <h4 className="font-display text-xl font-semibold leading-tight sm:text-3xl">{title}</h4>
 
       {index === 0 && (
@@ -428,7 +463,9 @@ function FlowVisual({ index, title }: { index: number; title: string }) {
   );
 }
 
-/* ───────────────────────── agent reputation loop (animated SVG) ───────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   AGENT REPUTATION LOOP (animated SVG)
+   ═══════════════════════════════════════════════════════════ */
 
 function LoopDiagram() {
   const nodes = [
@@ -438,7 +475,7 @@ function LoopDiagram() {
     { x: 30, y: 130, label: "Rate on-chain", sub: "→ re-rank live", icon: <ShieldCheck size={13} /> },
   ];
   return (
-    <div className="relative rounded-3xl border border-cyan-300/20 bg-gradient-to-br from-cyan-400/[0.06] to-emerald-400/[0.04] p-6">
+    <div className="glass-card p-6">
       <p className="text-xs uppercase tracking-[0.2em] text-cyan-300/70">The reputation loop</p>
       <div className="relative mt-2">
         <svg viewBox="0 0 300 260" className="w-full">
@@ -491,26 +528,91 @@ function LoopDiagram() {
   );
 }
 
-/* ───────────────────────── page ───────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   SPONSOR / "BUILT ON" CARDS
+   ═══════════════════════════════════════════════════════════ */
+
+const SPONSORS = [
+  {
+    icon: <Globe size={20} />,
+    name: "Arc",
+    body: "USDC settlement, a yield-bearing ERC-4626 vault, and programmable stablecoin dividends.",
+    color: "from-emerald-400/20 to-emerald-500/5",
+  },
+  {
+    icon: <Database size={20} />,
+    name: "Google BigQuery",
+    body: "Ranks the entire on-chain agent economy — a credit bureau for autonomous agents.",
+    color: "from-cyan-400/20 to-cyan-500/5",
+  },
+  {
+    icon: <ShieldCheck size={20} />,
+    name: "ENS",
+    body: "Merchants and agents are ENS names. Tap an NFC card; it resolves live from mainnet.",
+    color: "from-blue-400/20 to-blue-500/5",
+  },
+  {
+    icon: <Bot size={20} />,
+    name: "ERC-8004 / x402",
+    body: "Agent identity, reputation registry, and per-decision micropayments over HTTP.",
+    color: "from-purple-400/20 to-purple-500/5",
+  },
+  {
+    icon: <Zap size={20} />,
+    name: "Chainlink",
+    body: "Price Feeds value RWAs on-chain at payment time. CRE workflow orchestrates the flow.",
+    color: "from-amber-400/20 to-amber-500/5",
+  },
+  {
+    icon: <Lock size={20} />,
+    name: "World ID",
+    body: "Proof-of-personhood gate before first payment — sybil-resistant, privacy-preserving.",
+    color: "from-pink-400/20 to-pink-500/5",
+  },
+];
+
+/* ═══════════════════════════════════════════════════════════
+   MARQUEE DATA
+   ═══════════════════════════════════════════════════════════ */
+
+const MARQUEE = [
+  "Manhattan Office Tower",
+  "US T-Bills",
+  "Tokenized Gold",
+  "Apple 2030 Bonds",
+  "Money Market Fund",
+  "Commercial Real Estate",
+];
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN LANDING COMPONENT — 7 CHAPTERS
+   ═══════════════════════════════════════════════════════════ */
 
 export function Landing() {
   const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
+  const { scrollYProgress: heroProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
   });
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 160]);
-  const heroFade = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
-  const cardY = useTransform(scrollYProgress, [0, 1], [0, 90]);
+  const heroY = useTransform(heroProgress, [0, 1], [0, 160]);
+  const heroFade = useTransform(heroProgress, [0, 0.85], [1, 0]);
+  const cardY = useTransform(heroProgress, [0, 1], [0, 90]);
 
   return (
     <FullBleed className="-mt-24">
-      {/* ───────── HERO ───────── */}
+
+      {/* ═══════ CHAPTER 01 — HERO ═══════ */}
       <section
+        id="hero"
         ref={heroRef}
-        className="relative flex min-h-screen items-center px-6 pt-24"
+        className="chapter relative px-6 pt-24"
       >
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="chapter-bg">
+          <Image src="/images/story/hero-cityscape.png" alt="" fill className="object-cover opacity-15 saturate-50" priority />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#05070a]/60 via-[#05070a]/30 to-[#05070a]/90" />
+        </div>
+
+        <div className="chapter-content mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
           <motion.div style={{ y: heroY, opacity: heroFade }}>
             <motion.div
               initial={{ opacity: 0, y: 14 }}
@@ -522,7 +624,7 @@ export function Landing() {
               Real-world assets, finally spendable
             </motion.div>
 
-            <h1 className="font-display text-[3rem] font-semibold leading-[1.02] tracking-tight sm:text-[4.7rem]">
+            <h1 className="font-display text-[2.8rem] font-semibold leading-[1.02] tracking-tight sm:text-[4.7rem]">
               <WordReveal text="Your portfolio is" />
               <br />
               <span className="shimmer-text">
@@ -534,7 +636,7 @@ export function Landing() {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease, delay: 0.5 }}
-              className="mt-7 max-w-xl text-lg leading-relaxed text-white/55"
+              className="mt-7 max-w-xl text-lg leading-relaxed text-white/50"
             >
               Tokenize real estate, T-bills and funds. Earn yield as stablecoin dividends. Then
               tap to pay anywhere — an AI agent liquidates exactly the right slice, so your money
@@ -595,7 +697,7 @@ export function Landing() {
           transition={{ delay: 1.4 }}
           className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-white/30"
         >
-          <span className="text-[10px] uppercase tracking-[0.3em]">Scroll</span>
+          <span className="text-[10px] uppercase tracking-[0.3em]">Scroll to explore</span>
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
@@ -605,7 +707,7 @@ export function Landing() {
         </motion.div>
       </section>
 
-      {/* ───────── MARQUEE ───────── */}
+      {/* ═══════ MARQUEE ═══════ */}
       <FullBleed className="border-y border-white/10 bg-white/[0.02] py-5">
         <div className="flex overflow-hidden">
           <div className="marquee-track flex shrink-0 items-center gap-10 whitespace-nowrap pr-10 text-sm font-medium text-white/40">
@@ -619,32 +721,124 @@ export function Landing() {
         </div>
       </FullBleed>
 
-      {/* ───────── PROBLEM ───────── */}
-      <section className="px-6 py-28 sm:py-36">
-        <div className="mx-auto max-w-5xl">
-          <p className="text-xs uppercase tracking-[0.25em] text-emerald-300/70">The problem</p>
-          <h2 className="mt-5 font-display text-3xl font-semibold leading-[1.1] sm:text-5xl">
-            <WordReveal text="You own $200K in yield-earning assets." />{" "}
-            <span className="text-white/35">
-              <WordReveal text="You still can't buy a coffee with them." delay={0.1} />
+      {/* ═══════ CHAPTER 02 — THE PROBLEM ═══════ */}
+      <section id="problem" className="chapter px-6">
+        <div className="chapter-content mx-auto max-w-5xl py-28 sm:py-36">
+          <Reveal>
+            <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-emerald-300/70">
+              <Lock size={14} /> The problem
+            </p>
+          </Reveal>
+          <h2 className="mt-5 font-display text-3xl font-semibold leading-[1.1] sm:text-5xl lg:text-6xl">
+            <WordReveal text="You own $200K in yield-earning assets." />
+            <br />
+            <span className="text-white/30">
+              <WordReveal text="You still can't buy a coffee with them." delay={0.12} />
             </span>
           </h2>
           <Reveal delay={0.2}>
-            <p className="mt-6 max-w-2xl text-lg text-white/55">
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/50">
               Tokenized T-bills, real estate and funds earn 4–7% — but they&apos;re trapped. To
               spend, you sell everything to a stablecoin in advance and stop earning. FractionPay
               fixes the last mile.
             </p>
           </Reveal>
+
+          {/* Animated stat blocks */}
+          <div className="mt-14 grid gap-4 sm:grid-cols-3">
+            {[
+              { icon: <TrendingUp size={18} />, value: "$200,000", label: "Portfolio value", sub: "T-bills + real estate + gold" },
+              { icon: <Coins size={18} />, value: "$12,400/yr", label: "Yield earned", sub: "6.2% blended APY" },
+              { icon: <Lock size={18} />, value: "$0", label: "Spendable today", sub: "Locked in illiquid positions" },
+            ].map((s, i) => (
+              <Reveal key={s.label} delay={0.3 + i * 0.1}>
+                <div className="glass-card glass-card-glow p-6">
+                  <div className="flex items-center gap-2 text-emerald-300/70">
+                    {s.icon}
+                    <span className="text-xs uppercase tracking-wider">{s.label}</span>
+                  </div>
+                  <p className="mt-3 font-display text-2xl font-bold sm:text-3xl">{s.value}</p>
+                  <p className="mt-1 text-sm text-white/40">{s.sub}</p>
+                  <div className="accent-line mt-4" />
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ───────── PINNED FLOW ───────── */}
-      <PinnedFlow />
+      {/* ═══════ CHAPTER 03/04/05 — PINNED FLOW (Tokenize → Earn → Spend) ═══════ */}
+      <section id="tokenize">
+        <PinnedFlow />
+      </section>
 
-      {/* ───────── AGENT ECONOMY ───────── */}
-      <section className="px-6 py-28 sm:py-36">
-        <div className="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-2">
+      {/* ═══════ CHAPTER 05 — TAP TO SPEND (dedicated visual section) ═══════ */}
+      <section id="spend" className="chapter px-6">
+        <div className="chapter-content mx-auto max-w-6xl py-20">
+          <div className="grid items-center gap-14 lg:grid-cols-2">
+            <Reveal>
+              <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-cyan-300/80">
+                <Nfc size={14} /> Tap to spend
+              </p>
+              <h2 className="mt-5 font-display text-3xl font-semibold leading-[1.1] sm:text-5xl">
+                <WordReveal text="One tap." />
+                <br />
+                <span className="bg-gradient-to-r from-cyan-300 to-emerald-300 bg-clip-text text-transparent">
+                  <WordReveal text="Settled in seconds." delay={0.1} />
+                </span>
+              </h2>
+              <Reveal delay={0.15}>
+                <p className="mt-5 max-w-lg text-lg text-white/50">
+                  Tap an NFC card or scan a QR code. The merchant&apos;s ENS name resolves live from mainnet. An AI agent picks the optimal slice, and Arc settles in USDC.
+                </p>
+              </Reveal>
+            </Reveal>
+
+            <Reveal delay={0.2} y={40}>
+              <div className="relative overflow-hidden rounded-3xl">
+                <Image
+                  src="/images/story/nfc-payment.png"
+                  alt="NFC payment visualization"
+                  width={600}
+                  height={600}
+                  className="rounded-3xl opacity-80"
+                />
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-[#05070a] via-transparent to-transparent" />
+                {/* Overlay flow steps */}
+                <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between gap-2">
+                  {[
+                    { icon: <Nfc size={14} />, l: "Tap NFC" },
+                    { icon: <Bot size={14} />, l: "Agent decides" },
+                    { icon: <Zap size={14} />, l: "Arc settles" },
+                  ].map((s, i) => (
+                    <motion.div
+                      key={s.l}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3 + i * 0.15, ease }}
+                      className="flex items-center gap-1.5 rounded-full border border-white/15 bg-[#05070a]/70 px-3 py-1.5 text-[11px] font-medium text-white/80 backdrop-blur-md"
+                    >
+                      <span className="text-cyan-300">{s.icon}</span>
+                      {s.l}
+                      {i < 2 && <ArrowRight size={10} className="ml-1 text-white/30" />}
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════ CHAPTER 06 — AGENT ECONOMY ═══════ */}
+      <section id="agents" className="chapter px-6">
+        <div className="chapter-bg">
+          <Image src="/images/story/agent-network.png" alt="" fill className="object-cover opacity-10 saturate-50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#05070a]/80 via-[#05070a]/50 to-[#05070a]/90" />
+        </div>
+
+        <div className="chapter-content mx-auto grid max-w-6xl items-center gap-14 py-28 lg:grid-cols-2 sm:py-36">
           <div>
             <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-cyan-300/80">
               <Database size={14} /> The intelligence layer
@@ -657,7 +851,7 @@ export function Landing() {
               </span>
             </h2>
             <Reveal delay={0.2}>
-              <p className="mt-6 text-lg text-white/55">
+              <p className="mt-6 text-lg text-white/50">
                 FractionPay doesn&apos;t decide what to sell. It ranks 34,000+ ERC-8004 agents by
                 on-chain reputation with <strong className="text-white/85">Google BigQuery</strong>,
                 hires the best, and pays it $0.001 over{" "}
@@ -680,7 +874,7 @@ export function Landing() {
         </div>
       </section>
 
-      {/* ───────── BUILT ON ───────── */}
+      {/* ═══════ BUILT ON / SPONSORS ═══════ */}
       <section className="px-6 py-20">
         <div className="mx-auto max-w-6xl">
           <Reveal>
@@ -689,15 +883,15 @@ export function Landing() {
               Production rails, not a prototype.
             </h2>
           </Reveal>
-          <div className="mt-12 grid gap-4 sm:grid-cols-3">
-            {PILLARS.map((p, i) => (
-              <Reveal key={p.name} delay={i * 0.1} y={30}>
-                <div className="group h-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-emerald-300/30 hover:bg-white/[0.06]">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 text-emerald-300 transition group-hover:bg-emerald-400/15">
+          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {SPONSORS.map((p, i) => (
+              <Reveal key={p.name} delay={i * 0.08} y={30}>
+                <div className="glass-card glass-card-glow group h-full p-6 transition duration-300 hover:-translate-y-1">
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${p.color} text-emerald-300 transition group-hover:scale-110`}>
                     {p.icon}
                   </span>
                   <h3 className="mt-5 font-display text-lg font-semibold">{p.name}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-white/50">{p.body}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-white/45">{p.body}</p>
                 </div>
               </Reveal>
             ))}
@@ -705,24 +899,33 @@ export function Landing() {
         </div>
       </section>
 
-      {/* ───────── CTA ───────── */}
-      <section className="px-6 py-28">
-        <div className="mx-auto max-w-5xl">
+      {/* ═══════ CHAPTER 07 — CTA ═══════ */}
+      <section id="cta" className="chapter px-6 py-28">
+        <div className="chapter-bg">
+          <Image src="/images/story/cta-aurora.png" alt="" fill className="object-cover opacity-15 saturate-50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#05070a]/70 via-[#05070a]/40 to-[#05070a]/80" />
+        </div>
+
+        <div className="chapter-content mx-auto max-w-5xl">
           <Reveal>
             <div className="relative overflow-hidden rounded-[2rem] border border-emerald-300/20 p-12 text-center sm:p-20">
               <div className="aurora-blob absolute -top-1/2 left-1/4 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.25),transparent_60%)] blur-3xl" />
               <div className="aurora-blob delay absolute -bottom-1/2 right-1/4 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.18),transparent_60%)] blur-3xl" />
               <div className="relative">
-                <h2 className="font-display text-3xl font-semibold sm:text-5xl">
-                  Spend your portfolio. Keep earning.
+                <h2 className="font-display text-3xl font-semibold sm:text-5xl lg:text-6xl">
+                  <CharReveal text="Spend your portfolio." />
+                  <br />
+                  <span className="shimmer-text">
+                    <CharReveal text="Keep earning." delay={0.6} />
+                  </span>
                 </h2>
-                <p className="mx-auto mt-5 max-w-xl text-lg text-white/55">
+                <p className="mx-auto mt-5 max-w-xl text-lg text-white/50">
                   The $16 trillion RWA market, finally liquid — one tap at a time.
                 </p>
                 <Magnetic className="mt-9">
                   <Link
                     href="/dashboard"
-                    className="group flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 px-9 py-4 font-semibold text-black shadow-[0_10px_50px_-10px_rgba(16,185,129,0.7)]"
+                    className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 px-9 py-4 font-semibold text-black shadow-[0_10px_50px_-10px_rgba(16,185,129,0.7)]"
                   >
                     Launch FractionPay
                     <ArrowRight size={18} className="transition group-hover:translate-x-1" />
@@ -731,41 +934,14 @@ export function Landing() {
               </div>
             </div>
           </Reveal>
-          <p className="mt-12 text-center text-xs text-white/30">
-            FractionPay · ETHGlobal New York 2026 · Arc · Google Cloud · ENS
+          <p className="mt-12 text-center text-xs text-white/25">
+            FractionPay · ETHGlobal New York 2026 · Arc · Google Cloud · ENS · Chainlink · World · Dynamic
           </p>
         </div>
       </section>
     </FullBleed>
   );
 }
-
-const MARQUEE = [
-  "Manhattan Office Tower",
-  "US T-Bills",
-  "Tokenized Gold",
-  "Apple 2030 Bonds",
-  "Money Market Fund",
-  "Commercial Real Estate",
-];
-
-const PILLARS = [
-  {
-    icon: <Coins size={20} />,
-    name: "Arc",
-    body: "USDC settlement, a yield-bearing ERC-4626 vault, and programmable stablecoin dividends.",
-  },
-  {
-    icon: <Bot size={20} />,
-    name: "Google BigQuery",
-    body: "Ranks the entire on-chain agent economy — a credit bureau for autonomous agents.",
-  },
-  {
-    icon: <ShieldCheck size={20} />,
-    name: "ENS",
-    body: "Merchants and agents are ENS names. Tap an NFC card; it resolves live from mainnet.",
-  },
-];
 
 function HeroStat({ value, label }: { value: React.ReactNode; label: string }) {
   return (

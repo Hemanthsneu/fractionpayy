@@ -34,9 +34,9 @@ export function Navbar() {
       initial={{ y: -24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "border-b border-white/10 bg-[#05070a]/70 backdrop-blur-xl"
+          ? "border-b border-white/10 bg-[#05070a]/80 backdrop-blur-2xl shadow-[0_4px_30px_-4px_rgba(0,0,0,0.5)]"
           : "border-b border-transparent bg-transparent"
       }`}
     >
@@ -67,11 +67,18 @@ export function Navbar() {
               >
                 {l.label}
                 {active && (
-                  <motion.span
-                    layoutId="nav-active"
-                    className="absolute inset-0 -z-10 rounded-lg bg-white/[0.07]"
-                    transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                  />
+                  <>
+                    <motion.span
+                      layoutId="nav-active"
+                      className="absolute inset-0 -z-10 rounded-lg bg-white/[0.07]"
+                      transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                    />
+                    <motion.span
+                      layoutId="nav-underline"
+                      className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400"
+                      transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                    />
+                  </>
                 )}
               </Link>
             );

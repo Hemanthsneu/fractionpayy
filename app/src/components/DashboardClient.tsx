@@ -5,9 +5,17 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useAccount } from "wagmi";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { ArrowUpRight, Wallet, TrendingUp, Coins, Building2, Bot, Nfc, Loader2, RefreshCw, CreditCard } from "lucide-react";
+import { ArrowUpRight, Wallet, TrendingUp, Coins, Building2, Bot, Nfc, Loader2, RefreshCw, CreditCard, Sparkles } from "lucide-react";
 import { FundWallet } from "./FundWallet";
 import { DonutChart, AreaChart, CountUp, type Segment } from "./Charts";
+import { DashboardSkeleton } from "./DashboardSkeleton";
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+}
 
 interface Position { symbol: string; balance: number; priceUsd: number; valueUsd: number; yieldBps: number }
 interface Vault { tvlUsd: number; pricePerShare: number; totalFeesUsd: number; totalYieldPreservedUsd: number }
@@ -76,18 +84,40 @@ export function DashboardClient() {
       {/* header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.25em] text-emerald-300/70">Portfolio</p>
-          <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Welcome back 👋</h1>
-          <p className="mt-1 text-sm text-white/45">
-            {address ? <>Self-custodied on Arc · <span className="font-mono">{address.slice(0, 6)}…{address.slice(-4)}</span></> : "Connect a wallet to begin."}
-          </p>
+          <motion.p
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-emerald-300/70"
+          >
+            <Sparkles size={13} className="text-emerald-300" /> Portfolio
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease, delay: 0.05 }}
+            className="mt-1 font-display text-3xl font-semibold tracking-tight sm:text-4xl"
+          >
+            {getGreeting()}{address ? <>, <span className="shimmer-text">{address.slice(0, 6)}…{address.slice(-4)}</span></> : " 👋"}
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.15 }}
+            className="mt-1 text-sm text-white/40"
+          >
+            {address ? "Self-custodied on Arc · your keys, your assets" : "Connect a wallet to begin."}
+          </motion.p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button onClick={load} disabled={loading} className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/10 disabled:opacity-50">
+          <button onClick={load} disabled={loading} className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:border-white/20 disabled:opacity-50">
             <RefreshCw size={15} className={loading ? "animate-spin" : ""} /> Refresh
           </button>
-          <Link href="/marketplace" className="rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90">+ Invest</Link>
-          <Link href="/pay/coffeeshop.fractionpay.eth" className="rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold text-white/85 transition hover:bg-white/5">Pay</Link>
+          <Link href="/marketplace" className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90">
+            <span className="absolute inset-0 -translate-x-full bg-white/25 transition-transform duration-500 group-hover:translate-x-full" />
+            <span className="relative">+ Invest</span>
+          </Link>
+          <Link href="/pay/coffeeshop.fractionpay.eth" className="rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold text-white/85 transition hover:bg-white/5 hover:border-white/25">Pay</Link>
         </div>
       </div>
 
@@ -100,12 +130,12 @@ export function DashboardClient() {
       )}
 
       {loading ? (
-        <div className="flex justify-center py-24"><Loader2 className="animate-spin text-emerald-300" /></div>
+        <DashboardSkeleton />
       ) : (
         <>
           {/* hero: value chart + allocation donut */}
           <div className="grid gap-5 lg:grid-cols-3">
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="lg:col-span-2 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="glass-card glass-card-glow lg:col-span-2 overflow-hidden p-6">
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-xs uppercase tracking-wider text-white/40">Total portfolio value</p>
@@ -119,7 +149,7 @@ export function DashboardClient() {
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease, delay: 0.08 }} className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease, delay: 0.08 }} className="glass-card glass-card-glow p-6">
               <p className="text-xs uppercase tracking-wider text-white/40">Allocation</p>
               <div className="mt-3 flex flex-col items-center gap-4">
                 {segments.length > 0 ? (
@@ -150,7 +180,7 @@ export function DashboardClient() {
 
           {/* holdings + actions */}
           <div className="grid gap-5 lg:grid-cols-3">
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl lg:col-span-2">
+            <div className="glass-card glass-card-glow p-6 lg:col-span-2">
               <div className="flex items-center justify-between">
                 <h2 className="font-display text-lg font-semibold">Holdings</h2>
                 <Link href="/marketplace" className="text-xs text-emerald-300 hover:underline">Invest more →</Link>
@@ -170,7 +200,7 @@ export function DashboardClient() {
               )}
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl">
+            <div className="glass-card glass-card-glow p-6">
               <h2 className="font-display text-lg font-semibold">Quick actions</h2>
               <div className="mt-4 space-y-2">
                 <ActionLink href="/property" icon={<Building2 size={16} />} title="Property dividends" sub="Distribute / claim USDC" />
@@ -182,7 +212,7 @@ export function DashboardClient() {
           </div>
 
           {vault && (
-            <div className="grid gap-4 rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl sm:grid-cols-4">
+            <div className="glass-card grid gap-4 p-6 sm:grid-cols-4">
               <Mini label="Liquidity vault TVL" value={`$${vault.tvlUsd.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} />
               <Mini label="NAV per LP share" value={`$${vault.pricePerShare.toFixed(4)}`} />
               <Mini label="Protocol fees (LPs)" value={`$${vault.totalFeesUsd.toFixed(2)}`} />
@@ -196,18 +226,19 @@ export function DashboardClient() {
 }
 
 function Glass({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl ${className}`}>{children}</div>;
+  return <div className={`glass-card p-6 ${className}`}>{children}</div>;
 }
 
 function Stat({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: React.ReactNode; sub: string }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
+    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="glass-card glass-card-glow p-5">
       <div className="flex items-center gap-2 text-white/50">
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-400/10 text-emerald-300">{icon}</span>
         <span className="text-sm font-medium">{label}</span>
       </div>
       <p className="mt-3 font-display text-2xl font-bold">{value}</p>
       <p className="mt-0.5 text-xs text-white/40">{sub}</p>
+      <div className="accent-line mt-3" />
     </motion.div>
   );
 }
