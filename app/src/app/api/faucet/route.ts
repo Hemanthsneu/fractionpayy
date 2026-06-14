@@ -97,19 +97,43 @@ export async function POST(request: NextRequest) {
       nonce++;
     }
 
-    // 4. property shares — transfer from the treasury so the wallet earns
-    // dividends. NON-FATAL: the treasury can run out of shares (all 100 handed
-    // out over demos); if so, skip it. gas + USDC + RWAs are what the core
-    // invest/pay demo needs, so a missing property grant must NOT 502 the faucet.
+    // 4. property shares — MINT via issueShares so the wallet earns dividends.
+    // Uses the on-chain issueShares function (no treasury balance required).
+    // NON-FATAL: if the contract reverts (e.g. caller not authorized), skip it.
     try {
-      const propBal = (await pub.readContract({ address: dep.property, abi: erc20Abi, functionName: "balanceOf", args: [account.address] })) as bigint;
-      if (propBal >= PROPERTY_GRANT) {
-        const propTx = await wallet.writeContract({ address: dep.property, abi: erc20Abi, functionName: "transfer", args: [to, PROPERTY_GRANT], nonce });
-        txs.property = propTx;
-        hashes.push(propTx);
-      }
+      const propTx = await wallet.writeContract({
+        address: dep.property,
+        abi: [{
+          type: "function",
+          name: "issueShares",
+          inputs: [
+            { name: "investor", type: "address" },
+            { name: "shares", type: "uint256" },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        }],
+        functionName: "issueShares",
+        args: [to, PROPERTY_GRANT],
+        nonce,
+      });
+      txs.property = propTx;
+      hashes.push(propTx);
+      nonce++;
     } catch {
-      /* treasury out of property shares — non-fatal */
+      // issueShares failed (not authorized, or contract doesn't support it).
+      // Fall back to transfer from treasury if possible.
+      try {
+        const propBal = (await pub.readContract({ address: dep.property, abi: erc20Abi, functionName: "balanceOf", args: [account.address] })) as bigint;
+        if (propBal >= PROPERTY_GRANT) {
+          const propTx = await wallet.writeContract({ address: dep.property, abi: erc20Abi, functionName: "transfer", args: [to, PROPERTY_GRANT], nonce });
+          txs.property = propTx;
+          hashes.push(propTx);
+          nonce++;
+        }
+      } catch {
+        /* treasury out of property shares — non-fatal */
+      }
     }
 
     // confirm everything before responding so balances are queryable immediately.

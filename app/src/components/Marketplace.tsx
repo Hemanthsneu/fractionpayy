@@ -80,7 +80,12 @@ export function Marketplace({ assets }: { assets: Asset[] }) {
           </a>
         </p>
       )}
-      {error && <p className="mb-4 rounded-xl bg-red-400/10 px-4 py-2 text-sm text-red-400">{error}</p>}
+      {error && (
+        <div className="mb-4 flex items-center justify-between rounded-xl bg-red-400/10 px-4 py-2 text-sm text-red-400">
+          <span>{error}</span>
+          <button onClick={() => setError("")} className="ml-3 rounded p-0.5 hover:bg-red-400/20 transition" aria-label="Dismiss error">✕</button>
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {assets.map((a) => (
