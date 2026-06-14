@@ -34,9 +34,10 @@ export const maxDuration = 120;
 
 const pub = createPublicClient({ chain: arcTestnet, transport: http() });
 
-// Native Arc gas (USDC, 18-dec) to top a wallet up to. Enough for many txs.
-const GAS_TARGET = parseEther("1.5");
-const GAS_TOPUP = parseEther("2");
+// Native Arc gas (USDC, 18-dec). Arc gas is ~0.001/tx, so a fraction funds
+// hundreds of txs — keep the top-up small so the treasury isn't drained.
+const GAS_TARGET = parseEther("0.2");
+const GAS_TOPUP = parseEther("0.4");
 const USDC_GRANT = parseUnits("50000", 6); // 50k test USDC to invest with
 
 // Starter RWA basket (18-dec share tokens) — gives an instant, spendable portfolio.
