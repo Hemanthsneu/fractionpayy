@@ -34,10 +34,9 @@ export const maxDuration = 120;
 
 const pub = createPublicClient({ chain: arcTestnet, transport: http() });
 
-// Native Arc gas (USDC, 18-dec). Arc gas is ~0.001/tx, so a fraction funds
-// hundreds of txs — keep the top-up small so the treasury isn't drained.
-const GAS_TARGET = parseEther("0.2");
-const GAS_TOPUP = parseEther("0.4");
+// Native Arc gas (USDC, 18-dec) to top a wallet up to. Enough for many txs.
+const GAS_TARGET = parseEther("1.5");
+const GAS_TOPUP = parseEther("2");
 const USDC_GRANT = parseUnits("50000", 6); // 50k test USDC to invest with
 
 // Starter RWA basket (18-dec share tokens) — gives an instant, spendable portfolio.
@@ -98,20 +97,11 @@ export async function POST(request: NextRequest) {
       nonce++;
     }
 
-    // 4. property shares — transfer from the treasury so the wallet earns
-    // dividends. NON-FATAL: the treasury can run out of shares; if so, skip it
-    // (gas + USDC + RWAs are what the core invest/pay demo needs).
-    try {
-      const propBal = (await pub.readContract({ address: dep.property, abi: erc20Abi, functionName: "balanceOf", args: [account.address] })) as bigint;
-      if (propBal >= PROPERTY_GRANT) {
-        const propTx = await wallet.writeContract({ address: dep.property, abi: erc20Abi, functionName: "transfer", args: [to, PROPERTY_GRANT], nonce });
-        txs.property = propTx;
-        hashes.push(propTx);
-        nonce++;
-      }
-    } catch {
-      /* treasury out of property shares — non-fatal */
-    }
+    // 4. property shares — transfer from the treasury so the wallet earns dividends.
+    const propTx = await wallet.writeContract({ address: dep.property, abi: erc20Abi, functionName: "transfer", args: [to, PROPERTY_GRANT], nonce });
+    txs.property = propTx;
+    hashes.push(propTx);
+    nonce++;
 
     // confirm everything before responding so balances are queryable immediately.
     await Promise.all(hashes.map((h) => pub.waitForTransactionReceipt({ hash: h })));
@@ -123,7 +113,7 @@ export async function POST(request: NextRequest) {
         nativeGasUsdc: Number(formatEther(GAS_TOPUP)),
         usdc: 50000,
         rwaBasket: Object.keys(RWA_GRANT),
-        propertyShares: txs.property ? 10 : 0,
+        propertyShares: 10,
       },
       txs,
     });
