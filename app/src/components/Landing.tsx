@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { AreaChart } from "./Charts";
 import {
   motion,
   useScroll,
@@ -231,10 +232,10 @@ function HeroCard() {
             3827 ·· 7389
           </p>
 
-          <div className="mt-5 flex items-end justify-between">
+          <div className="mt-6 flex items-end justify-between">
             <div>
               <p className="text-[10px] uppercase tracking-wider text-white/40">Portfolio</p>
-              <p className="text-2xl font-bold text-white">$214,860</p>
+              <p className="font-display text-3xl font-bold text-white">$214,860</p>
             </div>
             <div className="text-right">
               <p className="text-[10px] uppercase tracking-wider text-white/40">Yield</p>
@@ -244,7 +245,12 @@ function HeroCard() {
             </div>
           </div>
 
-          <div className="mt-5 space-y-2">
+          {/* live sparkline */}
+          <div className="mt-3 -mx-1 h-16">
+            <AreaChart data={[0.72, 0.74, 0.73, 0.78, 0.8, 0.79, 0.84, 0.88, 0.86, 0.9, 0.94, 0.93, 0.97, 1]} height={64} color="#34d399" />
+          </div>
+
+          <div className="mt-4 space-y-2">
             {[
               { s: "🏙️", n: "Manhattan REIT", v: "$92,400" },
               { s: "🏛️", n: "US T-Bill 3M", v: "$68,100" },
@@ -321,8 +327,8 @@ function PinnedFlow() {
   const ys = [y0, y1, y2];
 
   return (
-    <section ref={ref} className="relative h-[300vh]">
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
+    <section ref={ref} className="relative h-[300vh] bg-[#05070a]">
+      <div className="sticky top-0 flex h-screen items-center overflow-hidden bg-[#05070a]/85 backdrop-blur-sm">
         <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           {/* left: rail + copy */}
           <div>
@@ -624,10 +630,10 @@ export function Landing() {
               Real-world assets, finally spendable
             </motion.div>
 
-            <h1 className="font-display text-[2.8rem] font-semibold leading-[1.02] tracking-tight sm:text-[4.7rem]">
+            <h1 className="font-serif text-[3.4rem] font-medium leading-[0.98] tracking-[-0.03em] sm:text-[5.2rem] lg:text-[6rem]">
               <WordReveal text="Your portfolio is" />
               <br />
-              <span className="shimmer-text">
+              <span className="shimmer-text font-serif-italic">
                 <WordReveal text="your payment method." delay={0.2} />
               </span>
             </h1>
@@ -729,7 +735,7 @@ export function Landing() {
               <Lock size={14} /> The problem
             </p>
           </Reveal>
-          <h2 className="mt-5 font-display text-3xl font-semibold leading-[1.1] sm:text-5xl lg:text-6xl">
+          <h2 className="mt-5 font-serif text-4xl font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl lg:text-7xl">
             <WordReveal text="You own $200K in yield-earning assets." />
             <br />
             <span className="text-white/30">
@@ -780,7 +786,7 @@ export function Landing() {
               <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-cyan-300/80">
                 <Nfc size={14} /> Tap to spend
               </p>
-              <h2 className="mt-5 font-display text-3xl font-semibold leading-[1.1] sm:text-5xl">
+              <h2 className="mt-5 font-serif text-4xl font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl">
                 <WordReveal text="One tap." />
                 <br />
                 <span className="bg-gradient-to-r from-cyan-300 to-emerald-300 bg-clip-text text-transparent">
@@ -843,7 +849,7 @@ export function Landing() {
             <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-cyan-300/80">
               <Database size={14} /> The intelligence layer
             </p>
-            <h2 className="mt-5 font-display text-3xl font-semibold leading-[1.1] sm:text-5xl">
+            <h2 className="mt-5 font-serif text-4xl font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl">
               <WordReveal text="We hire the agent." />
               <br />
               <span className="bg-gradient-to-r from-cyan-300 to-emerald-300 bg-clip-text text-transparent">
@@ -912,7 +918,7 @@ export function Landing() {
               <div className="aurora-blob absolute -top-1/2 left-1/4 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.25),transparent_60%)] blur-3xl" />
               <div className="aurora-blob delay absolute -bottom-1/2 right-1/4 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.18),transparent_60%)] blur-3xl" />
               <div className="relative">
-                <h2 className="font-display text-3xl font-semibold sm:text-5xl lg:text-6xl">
+                <h2 className="font-serif text-4xl font-medium leading-[1.02] tracking-[-0.02em] sm:text-6xl lg:text-7xl">
                   <CharReveal text="Spend your portfolio." />
                   <br />
                   <span className="shimmer-text">

@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
 
 const CHAPTERS = [
   { id: "hero", label: "Home" },
@@ -21,28 +21,45 @@ export function ChapterNav() {
   const [active, setActive] = useState(0);
   const [visible, setVisible] = useState(false);
 
-  // Show after preloader completes (delay)
+  // Show after preloader completes; also reveal as soon as the user scrolls.
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), 3000);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(() => setVisible(true), 2200);
+    const onScroll = () => { if (window.scrollY > 80) setVisible(true); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { clearTimeout(timer); window.removeEventListener("scroll", onScroll); };
   }, []);
 
-  // Track active section via IntersectionObserver
+  // Track the active section by which one crosses the viewport center.
+  // (Robust for any height — IntersectionObserver thresholds fail on tall
+  // pinned sections like the 300vh flow.)
   useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-    CHAPTERS.forEach((ch, i) => {
-      const el = document.getElementById(ch.id);
-      if (!el) return;
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) setActive(i);
-        },
-        { threshold: 0.4 }
-      );
-      observer.observe(el);
-      observers.push(observer);
-    });
-    return () => observers.forEach((o) => o.disconnect());
+    let raf = 0;
+    const compute = () => {
+      const center = window.innerHeight / 2;
+      let best = 0;
+      let bestDist = Infinity;
+      CHAPTERS.forEach((ch, i) => {
+        const el = document.getElementById(ch.id);
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const inside = r.top <= center && r.bottom >= center;
+        const dist = inside ? 0 : Math.min(Math.abs(r.top - center), Math.abs(r.bottom - center));
+        if (dist < bestDist) { bestDist = dist; best = i; }
+      });
+      setActive(best);
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(compute);
+    };
+    compute();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   const scrollTo = useCallback((id: string) => {

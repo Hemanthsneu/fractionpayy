@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono, Space_Grotesk, Fraunces } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { Navbar } from "@/components/Navbar";
@@ -17,6 +17,13 @@ const display = Space_Grotesk({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
 });
+// Fancy editorial serif for big headlines (Offerly-style display contrast).
+const serif = Fraunces({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+});
 
 export const metadata: Metadata = {
   title: "FractionPay — your portfolio is your payment method",
@@ -32,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${display.variable} grain min-h-dvh bg-[#05070a] font-sans text-white antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${display.variable} ${serif.variable} grain min-h-dvh bg-[#05070a] font-sans text-white antialiased`}
       >
         <PreloaderWrapper>
           {/* WebGL shader field — behind everything */}

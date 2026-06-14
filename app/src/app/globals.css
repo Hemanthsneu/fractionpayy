@@ -70,6 +70,17 @@ html.lenis body {
   font-family: var(--font-display), var(--font-geist-sans), sans-serif;
   letter-spacing: -0.02em;
 }
+/* Fancy editorial serif for big headlines */
+.font-serif {
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+  letter-spacing: -0.03em;
+  font-optical-sizing: auto;
+}
+.font-serif-italic {
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
 
 /* ═══════════════════════════════════════════════════════════
    PRELOADER
@@ -104,7 +115,19 @@ html.lenis body {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  overflow: hidden;
+  /* isolate stacking so adjacent sections never bleed/overlap during scroll.
+     bg is clipped by .chapter-bg's own overflow — keeping content un-clipped. */
+  isolation: isolate;
+}
+/* solid backdrop so the WebGL/particle field doesn't make sections feel like
+   they overlap; each chapter sits on its own faint panel. */
+.chapter::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(5,7,10,0) 0%, rgba(5,7,10,0.35) 50%, rgba(5,7,10,0) 100%);
+  pointer-events: none;
 }
 .chapter-bg {
   position: absolute;
